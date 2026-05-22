@@ -9,6 +9,9 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { ref, onValue } from 'firebase/database';
 import AuthScreen from './components/AuthScreen';
 import Profile from './components/Profile';
+import CareerHub from './components/CareerHub';
+import LearningHub from './components/LearningHub';
+import OpportunityHub from './components/OpportunityHub';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('analyzer');
@@ -369,6 +372,27 @@ export default function App() {
           >
             🔍 Analyzer
           </button>
+
+          <button 
+            className={`nav-link ${activeTab === 'career' ? 'active' : ''}`}
+            onClick={() => setActiveTab('career')}
+          >
+            🚀 Career Hub
+          </button>
+          
+          <button 
+            className={`nav-link ${activeTab === 'learning' ? 'active' : ''}`}
+            onClick={() => setActiveTab('learning')}
+          >
+            📚 Learning
+          </button>
+          
+          <button 
+            className={`nav-link ${activeTab === 'opportunities' ? 'active' : ''}`}
+            onClick={() => setActiveTab('opportunities')}
+          >
+            💼 Opportunities
+          </button>
           
           {analysisResult && (
             <>
@@ -481,6 +505,18 @@ export default function App() {
             apiKey={apiKey} 
             defaultJd={lastJd} 
           />
+        )}
+
+        {activeTab === 'career' && (
+          <CareerHub user={user} apiKey={apiKey} />
+        )}
+
+        {activeTab === 'learning' && (
+          <LearningHub user={user} apiKey={apiKey} />
+        )}
+
+        {activeTab === 'opportunities' && (
+          <OpportunityHub user={user} apiKey={apiKey} />
         )}
 
         {activeTab === 'profile' && (

@@ -2,6 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import analyzeRouter from './routes/analyze.js';
+import careerRouter from './routes/career.js';
+import learningRouter from './routes/learning.js';
+import opportunitiesRouter from './routes/opportunities.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -30,6 +33,9 @@ app.get('/health', (req, res) => {
 
 // API Routes
 app.use('/api', analyzeRouter);
+app.use('/api/career', careerRouter);
+app.use('/api/learning', learningRouter);
+app.use('/api/opportunities', opportunitiesRouter);
 
 // Serve static assets from frontend build
 const buildPath = path.join(__dirname, '../frontend/dist');
