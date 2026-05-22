@@ -108,6 +108,12 @@ Return ONLY a valid JSON object matching the following structure:
       "verified": true
     }
   },
+  "extractedProfile": {
+    "skills": ["<skill1>", "<skill2>"],
+    "education": "<Candidate's highest education e.g., B.Arch, MBBS, LLB, B.Tech CS>",
+    "experience": "<Candidate's total experience e.g., '3 years', 'Fresher'>",
+    "domain": "<Specific industry domain e.g., architecture, medicine, law, business, software_it>"
+  },
   "employabilityAudit": {
     "universityExposure": {
       "reputationScore": <integer between 0 and 100>,

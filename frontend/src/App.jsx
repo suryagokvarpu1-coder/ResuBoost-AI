@@ -508,15 +508,15 @@ export default function App() {
         )}
 
         {activeTab === 'career' && (
-          <CareerHub user={user} apiKey={apiKey} />
+          <CareerHub user={user} apiKey={apiKey} analysisResult={analysisResult} />
         )}
 
         {activeTab === 'learning' && (
-          <LearningHub user={user} apiKey={apiKey} />
+          <LearningHub user={user} apiKey={apiKey} analysisResult={analysisResult} />
         )}
 
         {activeTab === 'opportunities' && (
-          <OpportunityHub user={user} apiKey={apiKey} />
+          <OpportunityHub user={user} apiKey={apiKey} analysisResult={analysisResult} />
         )}
 
         {activeTab === 'profile' && (

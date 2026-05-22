@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react';
 
-export default function LearningHub({ user, apiKey }) {
+export default function LearningHub({ user, apiKey, analysisResult }) {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
+        const activeProfile = analysisResult?.extractedProfile || user?.preferences || { domain: 'software_it' };
+        
         const res = await fetch('/api/learning/recommend', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'x-api-key': apiKey || ''
           },
-          body: JSON.stringify({ userProfile: user?.preferences || { domain: 'software_it' } })
+          body: JSON.stringify({ userProfile: activeProfile })
         });
         const result = await res.json();
         setCourses(result.recommendations || []);

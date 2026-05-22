@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react';
 
-export default function OpportunityHub({ user, apiKey }) {
+export default function OpportunityHub({ user, apiKey, analysisResult }) {
   const [opportunities, setOpportunities] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchOpps = async () => {
       try {
+        const activeProfile = analysisResult?.extractedProfile || user?.preferences || { domain: 'software_it' };
+        
         const res = await fetch('/api/opportunities/match', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'x-api-key': apiKey || ''
           },
-          body: JSON.stringify({ userProfile: user?.preferences || { domain: 'software_it' }, opportunityType: 'all' })
+          body: JSON.stringify({ userProfile: activeProfile, opportunityType: 'all' })
         });
         const result = await res.json();
         setOpportunities(result.opportunities || []);

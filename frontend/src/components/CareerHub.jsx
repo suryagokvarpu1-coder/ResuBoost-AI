@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export default function CareerHub({ user, apiKey }) {
+export default function CareerHub({ user, apiKey, analysisResult }) {
   const [activeView, setActiveView] = useState('explore');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
@@ -9,13 +9,14 @@ export default function CareerHub({ user, apiKey }) {
   const fetchExplore = async () => {
     setLoading(true);
     try {
+      const activeProfile = analysisResult?.extractedProfile || user?.preferences || { domain: 'software_it', experience: 'Fresher' };
       const res = await fetch('/api/career/explore', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': apiKey || ''
         },
-        body: JSON.stringify({ userProfile: user?.preferences || { domain: 'software_it', experience: 'Fresher' } })
+        body: JSON.stringify({ userProfile: activeProfile })
       });
       const result = await res.json();
       setData(result);
@@ -30,6 +31,7 @@ export default function CareerHub({ user, apiKey }) {
     if (!targetRole) return;
     setLoading(true);
     try {
+      const activeProfile = analysisResult?.extractedProfile || user?.preferences || { domain: 'software_it', experience: 'Fresher' };
       const res = await fetch('/api/career/roadmap', {
         method: 'POST',
         headers: {
@@ -37,7 +39,7 @@ export default function CareerHub({ user, apiKey }) {
           'x-api-key': apiKey || ''
         },
         body: JSON.stringify({ 
-          userProfile: user?.preferences || { domain: 'software_it', experience: 'Fresher' },
+          userProfile: activeProfile,
           targetRole 
         })
       });

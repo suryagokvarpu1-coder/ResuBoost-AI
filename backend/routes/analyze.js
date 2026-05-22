@@ -266,6 +266,8 @@ router.post('/analyze', upload.single('resume'), async (req, res) => {
             professionalProfile: { headline: 'Professional', industry: 'Unknown', summary: 'Parsed from local.', verified: false }
           },
           employabilityAudit: aiResult.employabilityAudit || generateLocalEmployabilityAudit(resumeText),
+          detectedDomain: aiResult.detectedDomain || 'General Professional',
+          extractedProfile: aiResult.extractedProfile || null,
           isAI: true
         };
 
@@ -303,6 +305,7 @@ router.post('/analyze', upload.single('resume'), async (req, res) => {
       suitability: localSuitability,
       scannedProfiles: localScannedProfiles,
       employabilityAudit: localEmployabilityAudit,
+      detectedDomain: 'General Professional',
       isAI: false,
       warning: 'Using offline analyzer. Enter a Gemini API Key in Settings to get full AI suitability checks and profile scans.'
     });
