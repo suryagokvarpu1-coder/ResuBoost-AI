@@ -102,21 +102,12 @@ export default function Dashboard({ data, onReset }) {
             {suitability.summary || 'No compatibility summary generated.'}
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '1rem', marginTop: '0.5rem' }}>
             <div>
               <h4 style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
-                💻 Code Repository Alignment
+                🌐 Digital Footprint Alignment
               </h4>
               <p style={{ fontSize: '0.9rem', color: 'var(--text-primary)', lineHeight: '1.4' }}>
-                {suitability.githubAlignment || 'No repository comparison data was analyzed.'}
-              </p>
-            </div>
-            <div>
-              <h4 style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
-                👔 Professional Footprint Alignment
-              </h4>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-primary)', lineHeight: '1.4' }}>
-                {suitability.linkedinAlignment || 'No LinkedIn profile audit data was analyzed.'}
+                {suitability.digitalFootprintAlignment || 'No digital footprint verification performed.'}
               </p>
             </div>
           </div>
@@ -301,150 +292,42 @@ export default function Dashboard({ data, onReset }) {
           
           <div className="grid-2">
             
-            {/* GitHub Profile Box */}
-            <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {/* Professional Profile Box */}
+            <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', gridColumn: '1 / -1' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '0.75rem' }}>
                 <h4 style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ fontSize: '1.25rem' }}>💻</span> GitHub Profile Scan
+                  <span style={{ fontSize: '1.25rem' }}>👔</span> AI Reconstructed Professional Profile
                 </h4>
-                {scannedProfiles.github ? (
-                  <span className="badge badge-success">Live Fetch Done</span>
+                {scannedProfiles.professionalProfile ? (
+                  <span className="badge badge-info">Verified Match ✓</span>
                 ) : (
-                  <span className="badge badge-danger">Not Linked</span>
+                  <span className="badge badge-warning">No Profile Detected</span>
                 )}
               </div>
 
-              {scannedProfiles.github ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div>
-                      <a 
-                        href={`https://github.com/${scannedProfiles.github.username || ''}`} 
-                        target="_blank" 
-                        rel="noreferrer"
-                        style={{ color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600, fontSize: '1.1rem' }}
-                      >
-                        @{scannedProfiles.github.username || 'unknown'}
-                      </a>
-                      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontStyle: 'italic', marginTop: '0.15rem' }}>
-                        "{scannedProfiles.github.bio || 'No public bio listed.'}"
-                      </p>
-                    </div>
-                    <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.8rem', textAlign: 'right' }}>
-                      <div style={{ background: 'rgba(255,255,255,0.03)', padding: '0.25rem 0.5rem', borderRadius: '4px' }}>
-                        <strong>{scannedProfiles.github.publicReposCount ?? 0}</strong> Repos
-                      </div>
-                      <div style={{ background: 'rgba(255,255,255,0.03)', padding: '0.25rem 0.5rem', borderRadius: '4px' }}>
-                        <strong>{scannedProfiles.github.followers ?? 0}</strong> Followers
-                      </div>
-                    </div>
-                  </div>
-
-                  <h5 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', textTransform: 'uppercase', marginTop: '0.5rem' }}>
-                    Recent/Active Repositories:
-                  </h5>
-                  
-                  {scannedProfiles.github.repos && scannedProfiles.github.repos.length > 0 ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      {scannedProfiles.github.repos.map((repo, idx) => (
-                        <div 
-                          key={idx} 
-                          style={{ 
-                            padding: '0.6rem', 
-                            background: 'rgba(255,255,255,0.02)', 
-                            border: '1px solid var(--border-color)', 
-                            borderRadius: '6px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '0.2rem'
-                          }}
-                        >
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <a 
-                              href={repo?.url || '#'} 
-                              target="_blank" 
-                              rel="noreferrer"
-                              style={{ color: '#fff', textDecoration: 'none', fontWeight: 500, fontSize: '0.85rem' }}
-                            >
-                              📁 {repo?.name || 'Unnamed Repository'}
-                            </a>
-                            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                              <span style={{ background: 'rgba(59,130,246,0.1)', color: '#60a5fa', fontSize: '0.75rem', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
-                                {repo?.language || 'HTML/CSS/JS'}
-                              </span>
-                              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                                ⭐ {repo?.stars ?? 0}
-                              </span>
-                            </div>
-                          </div>
-                          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                            {repo?.description || 'No description provided.'}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>No public repositories found.</p>
-                  )}
-                </div>
-              ) : (
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', padding: '1.5rem 0', textAlign: 'center' }}>
-                  No GitHub repository profile link was detected in the resume text. Include `github.com/username` in your resume profile to scan.
-                </p>
-              )}
-            </div>
-
-            {/* LinkedIn Profile Box */}
-            <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '0.75rem' }}>
-                <h4 style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ fontSize: '1.25rem' }}>👔</span> LinkedIn Profile Scan
-                </h4>
-                {scannedProfiles.linkedin ? (
-                  <span className="badge badge-info">Reconstructed</span>
-                ) : (
-                  <span className="badge badge-danger">Not Linked</span>
-                )}
-              </div>
-
-              {scannedProfiles.linkedin ? (
+              {scannedProfiles.professionalProfile ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   <div>
                     <h5 style={{ fontSize: '1.1rem', color: '#fff', fontWeight: 600 }}>
-                      {scannedProfiles.linkedin.headline || 'Professional Profile'}
+                      {scannedProfiles.professionalProfile.headline || 'Professional'}
                     </h5>
                     <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-                      <span>Sector: {scannedProfiles.linkedin.industry || 'Technology'}</span>
-                      <span>•</span>
-                      <span>Connections: {scannedProfiles.linkedin.connections || '500+'}</span>
+                      <span>Sector: {scannedProfiles.professionalProfile.industry || 'Unknown'}</span>
                     </div>
                   </div>
 
                   <div style={{ padding: '0.75rem', background: 'rgba(168, 85, 247, 0.02)', border: '1px dashed var(--border-color)', borderRadius: '6px', marginTop: '0.25rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--color-secondary)', fontWeight: 600, marginBottom: '0.25rem' }}>
-                      <span>Reconstructed Profile Summary</span>
-                      <span>Verified Format ✓</span>
+                      <span>Reconstructed Executive Summary</span>
                     </div>
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
-                      {scannedProfiles.linkedin.summary || 'No professional overview generated.'}
+                      {scannedProfiles.professionalProfile.summary || 'No professional overview generated.'}
                     </p>
-                  </div>
-                  
-                  <div style={{ marginTop: '0.5rem' }}>
-                    <a 
-                      href={scannedProfiles.linkedin.profileUrl || '#'} 
-                      target="_blank" 
-                      rel="noreferrer"
-                      className="btn btn-secondary" 
-                      style={{ width: '100%', fontSize: '0.8rem', padding: '0.4rem 1rem' }}
-                    >
-                      View Candidate's LinkedIn URL ↗
-                    </a>
                   </div>
                 </div>
               ) : (
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', padding: '1.5rem 0', textAlign: 'center' }}>
-                  No LinkedIn profile link was detected in the resume text. Include `linkedin.com/in/username` in your resume profile to scan.
+                  Could not reconstruct a generic professional profile from this resume. Ensure clear domain keywords are present.
                 </p>
               )}
             </div>

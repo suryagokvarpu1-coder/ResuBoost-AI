@@ -9,7 +9,7 @@ export default function CareerHub({ user, apiKey }) {
   const fetchExplore = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/career/explore', {
+      const res = await fetch('/api/career/explore', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ export default function CareerHub({ user, apiKey }) {
     if (!targetRole) return;
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/career/roadmap', {
+      const res = await fetch('/api/career/roadmap', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

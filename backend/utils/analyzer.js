@@ -1,19 +1,19 @@
 // Dictionary of common professional skills, technologies, frameworks, and tools.
 const COMMON_KEYWORDS = [
-  // Programming Languages & Core Tech
-  'javascript', 'typescript', 'python', 'java', 'c++', 'c#', 'ruby', 'go', 'golang', 'php', 'swift', 'kotlin', 'rust', 'sql', 'html', 'css', 'sass', 'html5', 'css3', 'r', 'dart', 'scala', 'perl', 'haskell', 'lua', 'objective-c', 'assembly', 'bash', 'powershell', 'shell',
-  // Frameworks & Libraries
-  'react', 'angular', 'vue', 'next.js', 'nuxt.js', 'svelte', 'express', 'node.js', 'nodejs', 'django', 'flask', 'spring boot', 'laravel', 'asp.net', 'nest.js', 'jquery', 'bootstrap', 'tailwind', 'redux', 'graphql', 'fastapi', 'nest', 'expressjs', 'nestjs', 'remix', 'solidjs', 'lit', 'uikit', 'swiftui', 'react native', 'flutter', 'ionic', 'xamarin', 'cordova',
-  // Databases, Caching & ORMs
-  'mongodb', 'postgresql', 'postgres', 'mysql', 'sqlite', 'redis', 'elasticsearch', 'dynamodb', 'cassandra', 'firebase', 'mariadb', 'oracle', 'supabase', 'prisma', 'mongoose', 'sequelize', 'typeorm', 'hibernate', 'neo4j', 'db2',
-  // Cloud, DevOps & Hostings
-  'aws', 'azure', 'gcp', 'google cloud', 'docker', 'kubernetes', 'jenkins', 'ci/cd', 'cicd', 'github actions', 'terraform', 'ansible', 'serverless', 'nginx', 'linux', 'unix', 'apache', 'helm', 'circleci', 'travis ci', 'gitlab ci', 'heroku', 'vercel', 'netlify', 'render', 'digitalocean', 'cloudflare',
-  // Testing & Quality Assurance
-  'jest', 'cypress', 'mocha', 'chai', 'playwright', 'selenium', 'puppeteer', 'junit', 'pytest', 'testing library', 'postman', 'vitest', 'unit testing', 'integration testing', 'end-to-end testing', 'e2e testing',
-  // Tech Fields, AI, Machine Learning & Databases
-  'machine learning', 'artificial intelligence', 'ai', 'deep learning', 'nlp', 'natural language processing', 'computer vision', 'data science', 'big data', 'hadoop', 'spark', 'pandas', 'numpy', 'scikit-learn', 'tensorflow', 'pytorch', 'keras', 'huggingface', 'langchain', 'pinecone', 'weaviate', 'milvus', 'chromadb', 'llm', 'openai', 'gemini', 'chatgpt', 'rag', 'vector database', 'embeddings', 'blockchain', 'web3', 'cryptography', 'cybersecurity', 'ui/ux', 'user interface', 'user experience', 'figma', 'sketch', 'adobe xd', 'photoshop', 'illustrator',
-  // Methodologies, Tools & Soft Skills
-  'git', 'github', 'gitlab', 'bitbucket', 'jira', 'confluence', 'agile', 'scrum', 'kanban', 'webpack', 'vite', 'npm', 'yarn', 'pnpm', 'babel', 'rest api', 'restful', 'microservices', 'mvc', 'oop', 'functional programming', 'tdd', 'bdd', 'system design', 'architecture', 'performance optimization', 'seo', 'leadership', 'management', 'communication', 'collaboration', 'problem solving', 'teamwork', 'analytical', 'critical thinking', 'project management', 'product management', 'marketing', 'sales', 'content strategy', 'customer success', 'strategic planning', 'time management'
+  // Programming & IT
+  'javascript', 'typescript', 'python', 'java', 'c++', 'c#', 'ruby', 'go', 'golang', 'php', 'swift', 'kotlin', 'rust', 'sql', 'html', 'css', 'react', 'angular', 'vue', 'node.js', 'django', 'spring boot', 'aws', 'docker', 'kubernetes', 'ci/cd', 'machine learning', 'artificial intelligence',
+  // Medical & Healthcare
+  'patient care', 'clinical', 'surgery', 'diagnosis', 'medical record', 'emr', 'ehr', 'nursing', 'cpr', 'bls', 'acls', 'anatomy', 'pharmacology', 'radiology', 'pediatrics', 'oncology', 'neurology', 'healthcare management', 'public health', 'epidemiology',
+  // Legal & Law
+  'litigation', 'contract drafting', 'legal research', 'corporate law', 'intellectual property', 'family law', 'criminal defense', 'legal writing', 'mediation', 'arbitration', 'compliance', 'due diligence', 'patents', 'civil rights',
+  // Civil Engineering & Architecture
+  'autocad', 'revit', 'sketchup', 'structural engineering', 'project management', 'construction management', 'urban planning', 'surveying', 'geotechnical', 'fluid mechanics', 'blueprints', 'sustainability', 'leed',
+  // Finance & Banking
+  'financial modeling', 'valuation', 'accounting', 'auditing', 'tax preparation', 'investment banking', 'portfolio management', 'risk management', 'equities', 'derivatives', 'blockchain', 'cryptocurrency', 'fintech',
+  // Business, Management & Marketing
+  'agile', 'scrum', 'leadership', 'sales', 'seo', 'digital marketing', 'content strategy', 'supply chain', 'logistics', 'crm', 'b2b', 'b2c', 'product management', 'business development',
+  // Defense & Government
+  'public administration', 'policy analysis', 'security clearance', 'intelligence analysis', 'diplomacy', 'law enforcement', 'tactical training', 'emergency response', 'national security'
 ];
 
 /**

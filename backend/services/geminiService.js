@@ -46,13 +46,13 @@ export async function analyzeResumeWithGemini(resumeText, jobDescription, scanne
 
     const githubSummary = scannedProfileData?.github 
       ? `Public Bio: "${scannedProfileData.github.bio || 'None'}"\nPublic Repositories:\n${JSON.stringify(scannedProfileData.github.repos, null, 2)}`
-      : 'No public GitHub profile data available or linked.';
+      : 'Not provided or not applicable to this profession.';
 
-    const linkedinUrl = scannedProfileData?.linkedinUrl || 'No LinkedIn profile URL found.';
+    const linkedinUrl = scannedProfileData?.linkedinUrl || 'Not provided.';
 
     const prompt = `
-You are an expert ATS (Applicant Tracking System) parser and senior recruiter.
-Analyze the following candidate Resume against the Job Description, taking into account their scanned social profile data (public GitHub repository details and LinkedIn profile link).
+You are an expert ATS (Applicant Tracking System) parser and senior universal career coach.
+Analyze the following candidate Resume against the Job Description. Be aware that the candidate may belong to ANY profession (e.g., Software, Medical, Legal, Civil Engineering, Business, Government, Arts).
 
 Job Description:
 """
@@ -64,31 +64,23 @@ Resume:
 ${resumeText}
 """
 
-Scanned GitHub Data:
-"""
-${githubSummary}
-"""
-
-Scanned LinkedIn URL:
-"""
-${linkedinUrl}
-"""
-
 Instructions:
-1. Evaluate overall fit, keyword scoring, structure, and readability.
-2. Formulate a final "suitability" verdict (Suitable, Partially Suitable, or Not Suitable) based on BOTH the Resume and their public GitHub repositories (does their actual code repository reflect the skills claimed on the resume?).
-3. Construct a simulated/reconstructed LinkedIn profile representation based on their Resume and LinkedIn URL. Generate a realistic Headline, Industry, Connections count estimation (between 100 and 500+), and Profile Summary. Mark it as verified and match it to their resume details.
-4. Perform an **Employability & Portfolio Audit**:
-   - Evaluate the university/college mentioned in the resume. Provide a reputation score and constructive branding feedback regarding career exposure. Avoid purely negative or dismissive comments for regional, lesser-known, or lower-tier colleges; instead, outline realistic off-campus networking strategies, open-source projects, and local developer meetups to proactively bridge the exposure gap.
-   - Determine if the candidate's skills and experience make them ready for an "Internship", "Junior Full-Time" or "Full-Time" role, with a readiness score and justification.
-   - Review the candidate's listed projects. Categorize each project as "Outdated" (uses obsolete tools), "Overused" (very common projects like basic To-do lists, calculators, basic weather apps, simple clones, basic CRUD), or "Good" (modern, complex, unique).
-   - For any "Outdated" or "Overused" project, suggest a modern, high-value replacement project that matches the target Job Description's domain/context (for example: recommend systems programming/RTOS/C/C++ projects for firmware or hardware roles; cloud/vector databases/high-throughput microservices/Kubernetes for backend roles; modern state management/CSS animations/responsive designs/performance tuning for frontend roles; vector search/embeddings/RAG/fine-tuning for AI and ML roles). Ensure the suggestions provide a complete technical blueprint that recruiters find attractive.
-   - Identify critical skill gaps in high-demand technologies, with learning recommendations.
-   - Provide concrete tips to optimize their LinkedIn and portfolio website.
+1. Identify the candidate's primary Professional Domain (e.g., "Healthcare", "Legal", "Software Engineering", "Business Administration").
+2. Evaluate overall fit, keyword scoring, structure, and readability specific to their domain. Do NOT penalize non-IT professionals for lacking GitHub or coding portfolios.
+3. Formulate a final "suitability" verdict based on the Resume and any provided online footprint.
+4. Construct a simulated/reconstructed professional profile representation based on their Resume. Generate a realistic Headline, Industry, and Profile Summary.
+5. Perform an **Employability & Portfolio Audit**:
+   - Evaluate the university/college mentioned. Provide constructive branding feedback regarding career exposure in their specific field.
+   - Determine readiness for "Internship", "Junior Full-Time" or "Full-Time" role.
+   - Review the candidate's listed projects, clinical rotations, cases, or practical experiences. Categorize each as "Outdated", "Overused" (e.g., standard generic academic assignments), or "Good".
+   - Suggest modern, high-value replacement projects or practical experiences that match the target Job Description's domain (e.g., for Medical: 'Participate in a specific clinical trial'; for Legal: 'Draft mock contracts for SaaS startups'; for IT: 'Build a distributed system').
+   - Identify critical skill/certification gaps in high-demand areas for their specific profession.
+   - Provide concrete tips to optimize their professional presence.
 
 Provide the evaluation in JSON format.
 Return ONLY a valid JSON object matching the following structure:
 {
+  "detectedDomain": "<Candidate's primary professional domain>",
   "atsScore": <integer between 0 and 100, representing overall fit>,
   "keywordScore": <integer between 0 and 100, based on keyword overlap>,
   "formattingScore": <integer between 0 and 100, based on professional resume structure>,
@@ -105,69 +97,58 @@ Return ONLY a valid JSON object matching the following structure:
   ],
   "suitability": {
     "verdict": "<one of: Suitable, Partially Suitable, Not Suitable>",
-    "summary": "<paragraph explaining candidate's fit, matching their GitHub/resume work to the job>",
-    "githubAlignment": "<sentence analyzing how their actual GitHub projects align with the role requirements>",
-    "linkedinAlignment": "<sentence analyzing their professional brand and profile presence>"
+    "summary": "<paragraph explaining candidate's fit for this specific profession>",
+    "digitalFootprintAlignment": "<sentence analyzing their online presence or lack thereof, tailored to what is expected in their industry>"
   },
   "scannedProfiles": {
-    "github": {
-      "username": "${scannedProfileData?.github?.username || ''}",
-      "bio": "${scannedProfileData?.github?.bio || ''}",
-      "followers": ${scannedProfileData?.github?.followers || 0},
-      "publicReposCount": ${scannedProfileData?.github?.publicReposCount || 0},
-      "repos": ${JSON.stringify(scannedProfileData?.github?.repos || [])}
-    },
-    "linkedin": {
-      "profileUrl": "${linkedinUrl}",
-      "headline": "<reconstructed professional headline matching their work history, e.g., Senior React Developer at TechCorp>",
-      "industry": "<candidate's industry, e.g., Software Development>",
-      "connections": "<estimated connections count, e.g., 500+ or 250+>",
-      "summary": "<reconstructed professional summary matching their resume summary>",
+    "professionalProfile": {
+      "headline": "<reconstructed professional headline>",
+      "industry": "<candidate's industry>",
+      "summary": "<reconstructed professional summary>",
       "verified": true
     }
   },
   "employabilityAudit": {
     "universityExposure": {
-      "reputationScore": <integer between 0 and 100, representing university's placement branding strength>,
-      "brandingVerdict": "<short description of college's corporate footprint, career fairs, or tier rating>",
-      "careerOpportunities": "<description of candidate's likely exposure or access to off-campus/on-campus hiring>"
+      "reputationScore": <integer between 0 and 100>,
+      "brandingVerdict": "<short description of college's corporate footprint or tier rating>",
+      "careerOpportunities": "<description of candidate's likely exposure or access to hiring>"
     },
     "readiness": {
       "verdict": "<one of: Internship, Junior Full-Time, Full-Time>",
       "rating": <integer between 0 and 100, representing job/placement readiness>,
-      "rationale": "<detailed rationale for this readiness verdict, highlighting their actual project depth>"
+      "rationale": "<detailed rationale for this readiness verdict>"
     },
     "projectDoctor": [
       {
-        "originalProject": "<name of project from resume>",
+        "originalProject": "<name of project/experience from resume>",
         "status": "<one of: Outdated, Overused, Good>",
-        "feedback": "<critical feedback on why this project is outdated/overused/good, e.g., 'To-do lists are trivial and do not prove database or state-management proficiency.'>",
+        "feedback": "<critical feedback on why this is outdated/overused/good>",
         "suggestedReplacement": {
-          "title": "<name of recommended replacement project, e.g. Real-Time Collaborative Workspace>",
-          "techStack": "<suggested tools, e.g. Next.js, Socket.io, Redis, Tailwind>",
-          "description": "<sentence describing the implementation details of this replacement project>"
+          "title": "<name of recommended replacement experience/project>",
+          "techStack": "<suggested tools, methodologies, or frameworks>",
+          "description": "<sentence describing the details of this replacement experience>"
         }
       }
     ],
     "skillGaps": [
       {
-        "missingSkill": "<e.g., Docker, AWS, Next.js, CI/CD, TypeScript>",
+        "missingSkill": "<e.g., specific software, legal framework, medical procedure, or soft skill>",
         "importance": "<one of: Critical, Highly Recommended, Optional>",
-        "recommendedTools": [<string array of libraries/tools to study, e.g., ["GitHub Actions", "GitLab CI"]>]
+        "recommendedTools": [<string array of concepts/tools to study>]
       }
     ],
     "portfolioTips": [
       {
         "category": "<one of: LinkedIn Profile, Portfolio Website, Resume Presentation>",
-        "tip": "<specific strategy to boost visibility, e.g., Write a custom LinkedIn banner and pin your GitHub repository link.>",
+        "tip": "<specific strategy to boost visibility in their industry>",
         "actionItem": "<immediate action to execute>"
       }
     ]
   }
 }
 
-Make sure to be critical yet constructive, reflecting actual recruiter behaviors. Ensure all JSON fields are populated. Strictly return raw JSON only. Absolutely DO NOT wrap the output in markdown code blocks (such as \`\`\`json ... \`\`\`). The response must be directly parseable.
-`;
+Make sure to be critical yet constructive, reflecting actual recruiter behaviors across various industries. Ensure all JSON fields are populated. Strictly return raw JSON only. Absolutely DO NOT wrap the output in markdown code blocks.`;
 
     const result = await model.generateContent(prompt);
     const text = result.response.text();

@@ -7,7 +7,8 @@ export default function OpportunityHub({ user, apiKey }) {
   useEffect(() => {
     const fetchOpps = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/opportunities/match', {
+      try {
+        const res = await fetch('/api/opportunities/match', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

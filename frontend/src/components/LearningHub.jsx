@@ -7,7 +7,8 @@ export default function LearningHub({ user, apiKey }) {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/learning/recommend', {
+      try {
+        const res = await fetch('/api/learning/recommend', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

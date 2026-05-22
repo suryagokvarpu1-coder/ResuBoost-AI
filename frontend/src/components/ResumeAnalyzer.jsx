@@ -1,43 +1,44 @@
 import { useState, useRef } from 'react';
 
-const SAMPLE_JD_FRONTEND = `React Software Engineer
-We are seeking a React Software Engineer to join our dynamic frontend team.
+const SAMPLE_JD = `Senior Project Manager
+We are seeking an experienced Project Manager to lead cross-functional teams in delivering high-impact projects.
 Key Responsibilities:
-- Build reusable UI components and libraries using React, HTML5, CSS3, and JavaScript/TypeScript.
-- Optimize web applications for maximum speed, scalability, and modern UI responsiveness.
-- Collaborate with UI/UX designers to translate Figma design mockups into pixel-perfect code.
-- Implement state management using Redux or context API.
-- Standardize code quality with Jest and Cypress unit/integration testing.
-- Implement CI/CD pipelines using GitHub Actions.
+- Lead the planning, execution, and delivery of complex, multi-departmental initiatives.
+- Define project scope, goals, and deliverables in collaboration with senior management.
+- Develop comprehensive project plans and track progress using modern agile or waterfall methodologies.
+- Proactively manage risks, dependencies, and resolve critical blocking issues.
+- Communicate effectively with stakeholders at all levels, providing clear executive summaries.
 
 Requirements:
-- 3+ years of professional React experience.
-- Strong proficiency in JavaScript/ES6+, CSS grid/flexbox, and Tailwind CSS.
-- Experience with Next.js, Webpack, Vite, and REST APIs.
-- Familiarity with Git, Docker, and Agile Scrum methodologies.`;
+- 5+ years of professional project management or leadership experience.
+- Strong proficiency in risk management, resource allocation, and timeline tracking.
+- Experience with management software (e.g., Jira, Asana, Microsoft Project).
+- Excellent verbal and written communication skills.
+- Relevant certification (PMP, Agile Scrum Master, or equivalent) is highly preferred.`;
 
-const SAMPLE_RESUME_FRONTEND = `JANE DOE - FRONTEND DEVELOPER
-jane.doe@email.com | (123) 456-7890 | linkedin.com/in/janedoe | github.com/octocat
+const SAMPLE_RESUME = `JANE DOE - SENIOR PROJECT MANAGER
+jane.doe@email.com | (123) 456-7890 | linkedin.com/in/janedoe
 
 SUMMARY
-Detail-oriented Frontend Developer with 4 years of experience specializing in building responsive, accessible, and user-friendly web applications using React.
+Strategic and detail-oriented Project Manager with over 6 years of experience leading cross-functional teams to deliver enterprise-level initiatives on time and under budget. Proven track record in risk mitigation, stakeholder management, and process optimization.
 
 EXPERIENCE
-Frontend Engineer | Tech Corp (2023 - Present)
-- Worked on creating and maintaining multiple client-facing React web applications.
-- Collaborated with UI/UX designers to build reusable component libraries.
-- Wrote unit tests for components to ensure stability and code quality.
-- Helped with website SEO, increasing traffic by 10%.
+Senior Project Manager | Global Solutions Inc. (2020 - Present)
+- Spearheaded the end-to-end delivery of a $2M enterprise infrastructure upgrade, finishing 2 weeks ahead of schedule.
+- Managed a cross-functional team of 15 members across engineering, marketing, and operations.
+- Implemented Agile methodologies, increasing team velocity by 25% and reducing critical bugs by 15%.
+- Facilitated weekly stakeholder meetings to report on key performance indicators (KPIs) and project milestones.
 
-Junior Developer | Web Agency (2021 - 2023)
-- Built websites using HTML, CSS, JavaScript, and jQuery.
-- Fixed layout styling bugs and optimized page loading speeds.
+Project Coordinator | Horizon Enterprises (2017 - 2020)
+- Assisted in the tracking and reporting of over 20 concurrent projects.
+- Developed automated reporting dashboards that saved 10 hours of manual work per week.
+- Coordinated risk assessment workshops to identify potential delivery bottlenecks.
 
 EDUCATION
-B.S. in Computer Science | State University (2017 - 2021)
+B.S. in Business Administration | State University (2013 - 2017)
 
 SKILLS
-React, JavaScript, HTML5, CSS3, Git, REST APIs, Redux, Figma, jQuery.`;
+Project Management, Agile & Scrum, Risk Assessment, Cross-Functional Leadership, Budgeting, Jira, Asana, Microsoft Project, Stakeholder Communication.`;
 
 export default function ResumeAnalyzer({ apiKey, onAnalysisComplete }) {
   const [file, setFile] = useState(null);
@@ -105,8 +106,8 @@ export default function ResumeAnalyzer({ apiKey, onAnalysisComplete }) {
   };
 
   const loadPreset = () => {
-    setJobDescription(SAMPLE_JD_FRONTEND);
-    setResumeText(SAMPLE_RESUME_FRONTEND);
+    setJobDescription(SAMPLE_JD);
+    setResumeText(SAMPLE_RESUME);
     setFile(null);
     setError('');
   };
