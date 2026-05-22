@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { DOMAINS } from '../data/careersData.js';
 
 /**
  * Helper to get the Gemini model instance.
@@ -43,6 +44,7 @@ function cleanJsonResponse(text) {
 export async function analyzeResumeWithGemini(resumeText, jobDescription, scannedProfileData, clientApiKey, reqFile = null) {
   try {
     const model = getGeminiModel(clientApiKey);
+    const validDomainKeys = Object.keys(DOMAINS).join(', ');
 
     const githubSummary = scannedProfileData?.github 
       ? `Public Bio: "${scannedProfileData.github.bio || 'None'}"\nPublic Repositories:\n${JSON.stringify(scannedProfileData.github.repos, null, 2)}`
@@ -65,7 +67,7 @@ ${resumeText || 'No text extracted. Please rely on the attached PDF document.'}
 """
 
 Instructions:
-1. Identify the candidate's primary Professional Domain (e.g., "Healthcare", "Legal", "Software Engineering", "Business Administration").
+1. Identify the candidate's primary Professional Domain. You MUST map it to one of these exact keys: [${validDomainKeys}].
 2. Evaluate overall fit, keyword scoring, structure, and readability specific to their domain. Do NOT penalize non-IT professionals for lacking GitHub or coding portfolios.
 3. Formulate a final "suitability" verdict based on the Resume and any provided online footprint.
 4. Construct a simulated/reconstructed professional profile representation based on their Resume. Generate a realistic Headline, Industry, and Profile Summary.
@@ -73,14 +75,14 @@ Instructions:
    - Evaluate the university/college mentioned. Provide constructive branding feedback regarding career exposure in their specific field.
    - Determine readiness for "Internship", "Junior Full-Time" or "Full-Time" role.
    - Review the candidate's listed projects, clinical rotations, cases, or practical experiences. Categorize each as "Outdated", "Overused" (e.g., standard generic academic assignments), or "Good".
-   - Suggest modern, high-value replacement projects or practical experiences that match the target Job Description's domain (e.g., for Medical: 'Participate in a specific clinical trial'; for Legal: 'Draft mock contracts for SaaS startups'; for IT: 'Build a distributed system').
+   - Suggest modern, high-value replacement projects or practical experiences that match the target Job Description's domain.
    - Identify critical skill/certification gaps in high-demand areas for their specific profession.
    - Provide concrete tips to optimize their professional presence.
 
 Provide the evaluation in JSON format.
 Return ONLY a valid JSON object matching the following structure:
 {
-  "detectedDomain": "<Candidate's primary professional domain>",
+  "detectedDomain": "<Candidate's primary professional domain. MUST be one of: ${validDomainKeys}>",
   "atsScore": <integer between 0 and 100, representing overall fit>,
   "keywordScore": <integer between 0 and 100, based on keyword overlap>,
   "formattingScore": <integer between 0 and 100, based on professional resume structure>,
@@ -112,7 +114,7 @@ Return ONLY a valid JSON object matching the following structure:
     "skills": ["<skill1>", "<skill2>"],
     "education": "<Candidate's highest education e.g., B.Arch, MBBS, LLB, B.Tech CS>",
     "experience": "<Candidate's total experience e.g., '3 years', 'Fresher'>",
-    "domain": "<Specific industry domain e.g., architecture, medicine, law, business, software_it>"
+    "domain": "<MUST be one of the exact canonical keys: ${validDomainKeys}>"
   },
   "employabilityAudit": {
     "universityExposure": {

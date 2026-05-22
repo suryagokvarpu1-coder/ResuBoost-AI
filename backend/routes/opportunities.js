@@ -51,6 +51,19 @@ function generateStaticOpportunities(userProfile, opportunityType) {
     ],
     ai_data_science: [
       { id: 'opp6', title: 'Machine Learning Engineer Intern', company: 'AI Startup (via AngelList)', type: 'Internship', location: 'Remote', salary: '₹15,000–40,000/mo', experience: 'Fresher/1 year', skills: ['Python', 'TensorFlow/PyTorch', 'SQL', 'Statistics'], matchScore: 90, matchReason: 'Strong AI/ML domain match', applyVia: 'Internshala/Wellfound', deadline: 'Ongoing', description: 'Build ML models and data pipelines for early-stage AI product.', benefits: 'Mentorship, Equity consideration, Remote', growthPotential: 'Very High', isGovernment: false },
+    ],
+    civil_architecture: [
+      { id: 'opp7', title: 'Junior Architect', company: 'Top Tier Design Studio', type: 'Job', location: 'Mumbai / Bangalore', salary: '₹4–8 LPA', experience: '0–2 years', skills: ['AutoCAD', 'SketchUp', 'Revit', 'Lumion'], matchScore: 85, matchReason: 'Excellent match for architecture freshers with CAD skills', applyVia: 'LinkedIn/Company Website', deadline: 'Ongoing', description: 'Assist senior architects in drafting, 3D modeling, and site coordination.', benefits: 'Creative environment, exposure to large-scale projects', growthPotential: 'High', isGovernment: false },
+      { id: 'opp8', title: 'Site Engineer', company: 'L&T Construction', type: 'Job', location: 'Pan India', salary: '₹5–9 LPA', experience: '1–3 years', skills: ['Project Management', 'Quality Control', 'AutoCAD', 'Structural Analysis'], matchScore: 80, matchReason: 'Matches your core civil engineering background', applyVia: 'L&T Careers', deadline: 'Ongoing', description: 'Manage on-site construction activities, ensuring safety and structural integrity.', benefits: 'Job security, site allowances', growthPotential: 'High', isGovernment: false },
+    ],
+    medical_healthcare: [
+      { id: 'opp9', title: 'Resident Medical Officer (RMO)', company: 'Apollo Hospitals', type: 'Job', location: 'Delhi / Chennai', salary: '₹6–12 LPA', experience: 'MBBS Fresher', skills: ['Clinical Care', 'Emergency Medicine', 'Patient Management'], matchScore: 92, matchReason: 'Direct alignment with your MBBS qualification', applyVia: 'Hospital Portal', deadline: 'Ongoing', description: 'Provide primary clinical care, assist in emergencies and ward management.', benefits: 'Excellent clinical exposure, shift allowances', growthPotential: 'Very High', isGovernment: false },
+    ],
+    legal: [
+      { id: 'opp10', title: 'Legal Associate', company: 'Tier-1 Law Firm', type: 'Job', location: 'Delhi NCR / Mumbai', salary: '₹8–15 LPA', experience: '0–2 years', skills: ['Corporate Law', 'Drafting', 'Due Diligence', 'Research'], matchScore: 88, matchReason: 'Great starting role for law graduates', applyVia: 'Firm Website', deadline: 'Ongoing', description: 'Draft contracts, assist in M&A due diligence, and conduct legal research.', benefits: 'High salary, prestigious career path', growthPotential: 'Extremely High', isGovernment: false },
+    ],
+    business_entrepreneurship: [
+      { id: 'opp11', title: 'Business Analyst', company: 'Deloitte / KPMG', type: 'Job', location: 'Bangalore / Gurugram', salary: '₹6–12 LPA', experience: '0–2 years', skills: ['Excel', 'Data Analysis', 'Market Research', 'Presentation'], matchScore: 86, matchReason: 'Strong match for MBA/BBA graduates', applyVia: 'LinkedIn', deadline: 'Ongoing', description: 'Analyze business requirements, create reports, and support strategy teams.', benefits: 'Global exposure, rapid career growth', growthPotential: 'Very High', isGovernment: false },
     ]
   };
 

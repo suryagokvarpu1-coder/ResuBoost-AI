@@ -3,6 +3,7 @@ import multer from 'multer';
 import { extractTextFromBuffer } from '../utils/parser.js';
 import { analyzeResumeLocally } from '../utils/analyzer.js';
 import { analyzeResumeWithGemini, optimizeBulletPointWithGemini } from '../services/geminiService.js';
+import { mapToCanonicalDomain } from '../utils/domainMapper.js';
 
 const router = express.Router();
 
@@ -266,8 +267,11 @@ router.post('/analyze', upload.single('resume'), async (req, res) => {
             professionalProfile: { headline: 'Professional', industry: 'Unknown', summary: 'Parsed from local.', verified: false }
           },
           employabilityAudit: aiResult.employabilityAudit || generateLocalEmployabilityAudit(resumeText),
-          detectedDomain: aiResult.detectedDomain || 'General Professional',
-          extractedProfile: aiResult.extractedProfile || null,
+          detectedDomain: mapToCanonicalDomain(aiResult.detectedDomain),
+          extractedProfile: aiResult.extractedProfile ? {
+            ...aiResult.extractedProfile,
+            domain: mapToCanonicalDomain(aiResult.extractedProfile.domain)
+          } : null,
           isAI: true
         };
 
@@ -305,7 +309,7 @@ router.post('/analyze', upload.single('resume'), async (req, res) => {
       suitability: localSuitability,
       scannedProfiles: localScannedProfiles,
       employabilityAudit: localEmployabilityAudit,
-      detectedDomain: 'General Professional',
+      detectedDomain: mapToCanonicalDomain(resumeText), // Attempt basic keyword extraction from raw text
       isAI: false,
       warning: 'Using offline analyzer. Enter a Gemini API Key in Settings to get full AI suitability checks and profile scans.'
     });
