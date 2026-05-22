@@ -110,7 +110,6 @@ export default function Dashboard({ data, onReset }) {
                 {suitability.digitalFootprintAlignment || 'No digital footprint verification performed.'}
               </p>
             </div>
-          </div>
         </div>
       )}
 

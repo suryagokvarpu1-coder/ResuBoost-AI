@@ -97,11 +97,15 @@ export default function ResumeAnalyzer({ apiKey, onAnalysisComplete }) {
     if (allowedTypes.includes(selectedFile.type) || 
         selectedFile.name.endsWith('.pdf') || 
         selectedFile.name.endsWith('.docx') || 
+        selectedFile.name.endsWith('.doc') || 
         selectedFile.name.endsWith('.txt')) {
       setFile(selectedFile);
       setResumeText(''); // Clear text-area input if file is uploaded
+      
+      // Automatically trigger analysis
+      triggerAnalysis(selectedFile, '');
     } else {
-      setError('Unsupported file type. Please upload a PDF, DOCX, or TXT file.');
+      setError('Unsupported file type. Please upload a PDF, DOCX, DOC, or TXT file.');
     }
   };
 
@@ -112,16 +116,14 @@ export default function ResumeAnalyzer({ apiKey, onAnalysisComplete }) {
     setError('');
   };
 
-  const handleAnalyze = async (e) => {
-    e.preventDefault();
+  const triggerAnalysis = async (overrideFile = null, overrideResumeText = null) => {
     setError('');
     
-    if (!file && !resumeText.trim()) {
+    const activeFile = overrideFile !== null ? overrideFile : file;
+    const activeText = overrideResumeText !== null ? overrideResumeText : resumeText;
+
+    if (!activeFile && !activeText.trim()) {
       setError('Please upload a resume file or paste your resume text.');
-      return;
-    }
-    if (!jobDescription.trim()) {
-      setError('Please paste the target job description to match against.');
       return;
     }
 
@@ -135,10 +137,10 @@ export default function ResumeAnalyzer({ apiKey, onAnalysisComplete }) {
 
     try {
       const formData = new FormData();
-      if (file) {
-        formData.append('resume', file);
+      if (activeFile) {
+        formData.append('resume', activeFile);
       } else {
-        formData.append('resumeText', resumeText);
+        formData.append('resumeText', activeText);
       }
       formData.append('jobDescription', jobDescription);
 
@@ -231,7 +233,7 @@ export default function ResumeAnalyzer({ apiKey, onAnalysisComplete }) {
         </div>
       )}
 
-      <form onSubmit={handleAnalyze} className="grid-2">
+      <form onSubmit={(e) => { e.preventDefault(); triggerAnalysis(); }} className="grid-2">
         
         {/* Left Side: Resume Upload & Input */}
         <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
