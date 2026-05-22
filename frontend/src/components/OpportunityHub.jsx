@@ -7,7 +7,7 @@ export default function OpportunityHub({ user, apiKey, analysisResult }) {
   useEffect(() => {
     const fetchOpps = async () => {
       try {
-        const activeProfile = analysisResult?.extractedProfile || user?.preferences || { domain: 'software_it' };
+        const activeProfile = analysisResult?.extractedProfile || user?.preferences || { domain: 'general_professional', profession: 'Professional' };
         
         const res = await fetch('/api/opportunities/match', {
           method: 'POST',

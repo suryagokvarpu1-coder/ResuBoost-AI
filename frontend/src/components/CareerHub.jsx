@@ -9,7 +9,7 @@ export default function CareerHub({ user, apiKey, analysisResult }) {
   const fetchExplore = async () => {
     setLoading(true);
     try {
-      const activeProfile = analysisResult?.extractedProfile || user?.preferences || { domain: 'software_it', experience: 'Fresher' };
+      const activeProfile = analysisResult?.extractedProfile || user?.preferences || { domain: 'general_professional', profession: 'Professional', experience: 'Fresher' };
       const res = await fetch('/api/career/explore', {
         method: 'POST',
         headers: {
@@ -31,7 +31,7 @@ export default function CareerHub({ user, apiKey, analysisResult }) {
     if (!targetRole) return;
     setLoading(true);
     try {
-      const activeProfile = analysisResult?.extractedProfile || user?.preferences || { domain: 'software_it', experience: 'Fresher' };
+      const activeProfile = analysisResult?.extractedProfile || user?.preferences || { domain: 'general_professional', profession: 'Professional', experience: 'Fresher' };
       const res = await fetch('/api/career/roadmap', {
         method: 'POST',
         headers: {

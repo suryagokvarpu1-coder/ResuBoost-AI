@@ -1,4 +1,3 @@
-// Dictionary of common professional skills, technologies, frameworks, and tools.
 const COMMON_KEYWORDS = [
   // Programming & IT
   'javascript', 'typescript', 'python', 'java', 'c++', 'c#', 'ruby', 'go', 'golang', 'php', 'swift', 'kotlin', 'rust', 'sql', 'html', 'css', 'react', 'angular', 'vue', 'node.js', 'django', 'spring boot', 'aws', 'docker', 'kubernetes', 'ci/cd', 'machine learning', 'artificial intelligence',
@@ -7,13 +6,17 @@ const COMMON_KEYWORDS = [
   // Legal & Law
   'litigation', 'contract drafting', 'legal research', 'corporate law', 'intellectual property', 'family law', 'criminal defense', 'legal writing', 'mediation', 'arbitration', 'compliance', 'due diligence', 'patents', 'civil rights',
   // Civil Engineering & Architecture
-  'autocad', 'revit', 'sketchup', 'structural engineering', 'project management', 'construction management', 'urban planning', 'surveying', 'geotechnical', 'fluid mechanics', 'blueprints', 'sustainability', 'leed',
+  'autocad', 'revit', 'sketchup', 'structural engineering', 'project management', 'construction management', 'urban planning', 'surveying', 'geotechnical', 'fluid mechanics', 'blueprints', 'sustainability', 'leed', 'bim', 'lumion', '3ds max',
   // Finance & Banking
   'financial modeling', 'valuation', 'accounting', 'auditing', 'tax preparation', 'investment banking', 'portfolio management', 'risk management', 'equities', 'derivatives', 'blockchain', 'cryptocurrency', 'fintech',
   // Business, Management & Marketing
   'agile', 'scrum', 'leadership', 'sales', 'seo', 'digital marketing', 'content strategy', 'supply chain', 'logistics', 'crm', 'b2b', 'b2c', 'product management', 'business development',
   // Defense & Government
-  'public administration', 'policy analysis', 'security clearance', 'intelligence analysis', 'diplomacy', 'law enforcement', 'tactical training', 'emergency response', 'national security'
+  'public administration', 'policy analysis', 'security clearance', 'intelligence analysis', 'diplomacy', 'law enforcement', 'tactical training', 'emergency response', 'national security',
+  // Arts & Design
+  'graphic design', 'ui/ux', 'illustration', 'animation', 'adobe creative suite', 'photoshop', 'illustrator', 'typography', 'branding', 'video editing', 'premiere pro', 'after effects',
+  // Education
+  'curriculum development', 'instructional design', 'pedagogy', 'classroom management', 'e-learning', 'special education', 'student counseling', 'academic research'
 ];
 
 /**

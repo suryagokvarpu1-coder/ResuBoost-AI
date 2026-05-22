@@ -298,6 +298,7 @@ router.post('/analyze', upload.single('resume'), async (req, res) => {
     };
 
     const localEmployabilityAudit = generateLocalEmployabilityAudit(resumeText);
+    const offlineDetectedDomain = mapToCanonicalDomain(resumeText);
 
     return res.json({
       ...localResult,
@@ -309,7 +310,17 @@ router.post('/analyze', upload.single('resume'), async (req, res) => {
       suitability: localSuitability,
       scannedProfiles: localScannedProfiles,
       employabilityAudit: localEmployabilityAudit,
-      detectedDomain: mapToCanonicalDomain(resumeText), // Attempt basic keyword extraction from raw text
+      detectedDomain: offlineDetectedDomain,
+      extractedProfile: {
+        profession: 'Professional',
+        domain: offlineDetectedDomain,
+        skills: localResult.keywords.present || [],
+        education: 'Not parsed (Offline)',
+        experience: 'Not parsed (Offline)',
+        certifications: [],
+        projects: [],
+        careerInterests: []
+      },
       isAI: false,
       warning: 'Using offline analyzer. Enter a Gemini API Key in Settings to get full AI suitability checks and profile scans.'
     });

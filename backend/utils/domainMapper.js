@@ -9,7 +9,7 @@ import { DOMAINS } from '../data/careersData.js';
  */
 export function mapToCanonicalDomain(rawDomain) {
   if (!rawDomain || typeof rawDomain !== 'string') {
-    return 'software_it'; // Default fallback if completely missing
+    return 'general_professional'; // Default fallback if completely missing
   }
 
   const normalized = rawDomain.toLowerCase().trim();
@@ -21,7 +21,7 @@ export function mapToCanonicalDomain(rawDomain) {
 
   // 2. Keyword-based heuristic mapping
   const keywordMap = {
-    software_it: ['software', 'it ', 'computer science', 'programming', 'developer', 'frontend', 'backend', 'fullstack', 'cybersecurity', 'devops', 'cse'],
+    software_it: ['software', 'information technology', 'computer science', 'programming', 'developer', 'frontend', 'backend', 'fullstack', 'cybersecurity', 'devops', 'cse'],
     hardware_embedded: ['hardware', 'embedded', 'vlsi', 'iot', 'pcb', 'electronics', 'ece'],
     ai_data_science: ['ai', 'data science', 'machine learning', 'ml', 'nlp', 'computer vision', 'data engineer', 'analytics'],
     legal: ['law', 'legal', 'lawyer', 'judiciary', 'advocate', 'litigation', 'corporate law', 'ip law'],
@@ -43,7 +43,7 @@ export function mapToCanonicalDomain(rawDomain) {
     }
   }
 
-  // 3. Fallback: Return software_it if no match is found, though with AI passing strict keys, 
-  // this should rarely be hit.
-  return 'software_it';
+  // 3. Fallback: Return the original raw domain if no predefined match is found,
+  // allowing true dynamic profession support for any industry.
+  return rawDomain;
 }

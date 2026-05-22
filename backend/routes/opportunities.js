@@ -36,7 +36,7 @@ router.get('/platforms', (req, res) => {
 });
 
 function generateStaticOpportunities(userProfile, opportunityType) {
-  const domain = userProfile.domain || 'software_it';
+  const domain = userProfile.domain || 'general_professional';
   const experience = userProfile.experience || 'Fresher';
   
   const opportunityMap = {
@@ -64,10 +64,14 @@ function generateStaticOpportunities(userProfile, opportunityType) {
     ],
     business_entrepreneurship: [
       { id: 'opp11', title: 'Business Analyst', company: 'Deloitte / KPMG', type: 'Job', location: 'Bangalore / Gurugram', salary: '₹6–12 LPA', experience: '0–2 years', skills: ['Excel', 'Data Analysis', 'Market Research', 'Presentation'], matchScore: 86, matchReason: 'Strong match for MBA/BBA graduates', applyVia: 'LinkedIn', deadline: 'Ongoing', description: 'Analyze business requirements, create reports, and support strategy teams.', benefits: 'Global exposure, rapid career growth', growthPotential: 'Very High', isGovernment: false },
+    ],
+    general_professional: [
+      { id: 'opp12', title: 'General Management Trainee', company: 'Top Corporate', type: 'Job', location: 'Pan India', salary: '₹4–8 LPA', experience: 'Fresher/0-2 years', skills: ['Communication', 'Management', 'Operations'], matchScore: 80, matchReason: 'General professional profile match', applyVia: 'LinkedIn', deadline: 'Ongoing', description: 'Rotational program across different business units.', benefits: 'Fast-track career, learning across departments', growthPotential: 'High', isGovernment: false },
+      { id: 'opp13', title: 'UPSC CSE 2025 – Civil Services', company: 'Government of India (UPSC)', type: 'Government', location: 'Pan India', salary: '₹56,100–2,50,000/mo', experience: 'Any Graduate', skills: ['General Studies', 'CSAT', 'Optional Subject', 'Essay'], matchScore: 85, matchReason: 'Open to all graduates', applyVia: 'upsc.gov.in', deadline: 'Feb 2025', description: 'Prestigious civil services examination.', benefits: 'Prestige, social impact, govt perks', growthPotential: 'High', isGovernment: true },
     ]
   };
 
-  const opportunities = opportunityMap[domain] || opportunityMap['software_it'];
+  const opportunities = opportunityMap[domain] || opportunityMap['general_professional'];
   
   return {
     opportunities: opportunities,

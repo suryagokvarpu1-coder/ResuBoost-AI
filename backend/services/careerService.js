@@ -34,16 +34,20 @@ The user has provided their profile. Give comprehensive, personalized career gui
 
 User Profile:
 - Category: ${userProfile.category || 'Not specified'}
+- Profession: ${userProfile.profession || 'Not specified'}
 - Education: ${userProfile.education || 'Not specified'}
 - Domain/Field: ${userProfile.domain || 'Not specified'} 
 - Experience: ${userProfile.experience || 'Fresher'}
 - Current Skills: ${(userProfile.skills || []).join(', ') || 'Not listed'}
+- Certifications: ${(userProfile.certifications || []).join(', ') || 'Not listed'}
+- Projects: ${(userProfile.projects || []).join(', ') || 'Not listed'}
+- Career Interests: ${(userProfile.careerInterests || []).join(', ') || 'Not listed'}
 - Career Goal: ${userProfile.goal || 'Open to all opportunities'}
 - Location Preference: ${userProfile.location || 'Open to all'}
 - Work Type Preference: ${userProfile.workType || 'Any'}
 
 Domain Context:
-${JSON.stringify(domainInfo.subDomains || [], null, 2)}
+${domainInfo.subDomains ? JSON.stringify(domainInfo.subDomains, null, 2) : 'Use your extensive global knowledge base to generate accurate guidance for this specific profession.'}
 
 Generate a comprehensive career intelligence report. Return ONLY a valid JSON object:
 {
@@ -108,6 +112,7 @@ export async function generateCareerRoadmap(userProfile, targetRole, clientApiKe
 You are an expert career roadmap architect and life coach for professionals in India and globally.
 
 User Current State:
+- Profession: ${userProfile.profession || 'Not specified'}
 - Education: ${userProfile.education || 'Not specified'}
 - Domain: ${userProfile.domain || 'General'}
 - Current Skills: ${(userProfile.skills || []).join(', ') || 'None listed'}
@@ -167,13 +172,12 @@ Return ONLY raw JSON. No markdown.
 export async function getDomainIntelligence(domainId, subDomainId, userLevel, clientApiKey) {
   try {
     const model = getGeminiModel(clientApiKey);
-    const domain = DOMAINS[domainId];
-    if (!domain) throw new Error(`Domain ${domainId} not found.`);
+    const domainLabel = DOMAINS[domainId]?.label || domainId;
 
     const prompt = `
-You are a domain expert and career intelligence analyst for the ${domain.label} sector in India and globally.
+You are a domain expert and career intelligence analyst for the ${domainLabel} sector in India and globally.
 
-Domain: ${domain.label}
+Domain: ${domainLabel}
 Sub-domain: ${subDomainId || 'General'}
 User Level: ${userLevel || 'Beginner'}
 
@@ -233,6 +237,7 @@ export async function matchOpportunitiesToProfile(userProfile, opportunityType, 
 You are a recruitment and opportunity matching specialist.
 
 User Profile:
+- Profession: ${userProfile.profession || 'Not specified'}
 - Education: ${userProfile.education || 'Not specified'}
 - Domain: ${userProfile.domain || 'General'}
 - Skills: ${(userProfile.skills || []).join(', ') || 'Not listed'}
@@ -287,6 +292,7 @@ export async function generateLearningRecommendations(userProfile, clientApiKey)
 You are an expert learning and development advisor.
 
 User Profile:
+- Profession: ${userProfile.profession || 'Not specified'}
 - Domain: ${userProfile.domain || 'General'}
 - Current Skills: ${(userProfile.skills || []).join(', ') || 'Basic'}
 - Goal: ${userProfile.goal || 'Career growth'}

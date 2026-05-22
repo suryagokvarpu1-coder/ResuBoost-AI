@@ -7,7 +7,7 @@ export default function LearningHub({ user, apiKey, analysisResult }) {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const activeProfile = analysisResult?.extractedProfile || user?.preferences || { domain: 'software_it' };
+        const activeProfile = analysisResult?.extractedProfile || user?.preferences || { domain: 'general_professional', profession: 'Professional' };
         
         const res = await fetch('/api/learning/recommend', {
           method: 'POST',
