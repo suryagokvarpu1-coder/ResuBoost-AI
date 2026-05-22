@@ -40,7 +40,7 @@ function cleanJsonResponse(text) {
  * @param {string} [clientApiKey] 
  * @returns {Promise<object>} Detailed AI analysis
  */
-export async function analyzeResumeWithGemini(resumeText, jobDescription, scannedProfileData, clientApiKey) {
+export async function analyzeResumeWithGemini(resumeText, jobDescription, scannedProfileData, clientApiKey, reqFile = null) {
   try {
     const model = getGeminiModel(clientApiKey);
 
@@ -59,9 +59,9 @@ Job Description:
 ${jobDescription}
 """
 
-Resume:
+Resume Text Extracted (May be incomplete if image-based):
 """
-${resumeText}
+${resumeText || 'No text extracted. Please rely on the attached PDF document.'}
 """
 
 Instructions:
@@ -148,9 +148,22 @@ Return ONLY a valid JSON object matching the following structure:
   }
 }
 
-Make sure to be critical yet constructive, reflecting actual recruiter behaviors across various industries. Ensure all JSON fields are populated. Strictly return raw JSON only. Absolutely DO NOT wrap the output in markdown code blocks.`;
+  Make sure to be critical yet constructive, reflecting actual recruiter behaviors across various industries. Ensure all JSON fields are populated. Strictly return raw JSON only. Absolutely DO NOT wrap the output in markdown code blocks.`;
 
-    const result = await model.generateContent(prompt);
+    const promptParts = [
+      { text: prompt }
+    ];
+
+    if (reqFile && reqFile.mimetype === 'application/pdf') {
+      promptParts.push({
+        inlineData: {
+          data: reqFile.buffer.toString('base64'),
+          mimeType: 'application/pdf'
+        }
+      });
+    }
+
+    const result = await model.generateContent(promptParts);
     const text = result.response.text();
     return cleanJsonResponse(text);
   } catch (error) {

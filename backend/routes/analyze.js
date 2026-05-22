@@ -192,7 +192,7 @@ router.post('/analyze', upload.single('resume'), async (req, res) => {
       resumeText = await extractTextFromBuffer(buffer, mimetype);
     }
 
-    if (!resumeText.trim()) {
+    if (!resumeText.trim() && !req.file) {
       return res.status(400).json({ error: 'Please upload a resume file or paste your resume text.' });
     }
 
@@ -219,7 +219,8 @@ router.post('/analyze', upload.single('resume'), async (req, res) => {
           resumeText, 
           jobDescription, 
           scannedProfileData, 
-          clientApiKey
+          clientApiKey,
+          req.file
         );
         
         const mergedResult = {
