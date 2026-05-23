@@ -2,7 +2,7 @@ import express from 'express';
 import {
   exploreCareerWithAI,
   generateCareerRoadmap,
-  getDomainIntelligence,
+  generateDomainIntelligence,
   generateLearningRecommendations
 } from '../services/careerService.js';
 import { DOMAINS, USER_CATEGORIES, GOVERNMENT_SCHEMES } from '../data/careersData.js';
@@ -140,7 +140,7 @@ router.post('/domain-guide', async (req, res) => {
       });
     }
 
-    const result = await getDomainIntelligence(domainId, subDomainId, userLevel, clientApiKey);
+    const result = await generateDomainIntelligence(domainId, subDomainId, userLevel, clientApiKey);
     res.json({ ...result, isAI: true });
   } catch (err) {
     console.error('Domain Guide Error:', err);

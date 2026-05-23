@@ -1,5 +1,5 @@
 import express from 'express';
-import { matchOpportunitiesToProfile } from '../services/careerService.js';
+import { generateOpportunityRecommendations } from '../services/careerService.js';
 
 const router = express.Router();
 
@@ -22,7 +22,7 @@ router.post('/match', async (req, res) => {
       });
     }
 
-    const result = await matchOpportunitiesToProfile(userProfile, opportunityType, clientApiKey);
+    const result = await generateOpportunityRecommendations(userProfile, clientApiKey);
     res.json({ ...result, isAI: true });
   } catch (err) {
     console.error('Opportunity Match Error:', err);

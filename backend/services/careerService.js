@@ -1,31 +1,11 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { DOMAINS, USER_CATEGORIES } from '../data/careersData.js';
-
-function getGeminiModel(clientApiKey) {
-  const apiKey = clientApiKey || process.env.GEMINI_API_KEY;
-  if (!apiKey) throw new Error('Gemini API Key missing.');
-  const genAI = new GoogleGenerativeAI(apiKey);
-  return genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
-    generationConfig: { responseMimeType: 'application/json' }
-  });
-}
-
-function cleanJsonResponse(text) {
-  let cleaned = text.trim();
-  if (cleaned.startsWith('```')) {
-    cleaned = cleaned.replace(/^```[a-zA-Z0-9]*\s*/, '');
-    cleaned = cleaned.replace(/\s*```$/, '');
-  }
-  return JSON.parse(cleaned.trim());
-}
+import { executeWithGeminiFallback, cleanJsonResponse } from '../utils/geminiHelper.js';
 
 /**
  * Generate AI-powered career exploration based on user profile.
  */
 export async function exploreCareerWithAI(userProfile, clientApiKey) {
   try {
-    const model = getGeminiModel(clientApiKey);
     const domainInfo = DOMAINS[userProfile.domain] || {};
 
     const prompt = `
@@ -98,7 +78,7 @@ Generate a comprehensive career intelligence report. Return ONLY a valid JSON ob
 }
 Return ONLY raw JSON. No markdown formatting.
 `;
-    const result = await model.generateContent(prompt);
+    const result = await executeWithGeminiFallback(clientApiKey, prompt);
     return cleanJsonResponse(result.response.text());
   } catch (err) {
     console.error('Career Explore AI Error:', err.message);
@@ -111,7 +91,6 @@ Return ONLY raw JSON. No markdown formatting.
  */
 export async function generateCareerRoadmap(userProfile, targetRole, clientApiKey) {
   try {
-    const model = getGeminiModel(clientApiKey);
 
     const domain = userProfile.domain || 'General';
     
@@ -209,7 +188,7 @@ Generate a detailed, realistic, and actionable career roadmap. Return ONLY valid
 }
 Return ONLY raw JSON. No markdown.
 `;
-    const result = await model.generateContent(prompt);
+    const result = await executeWithGeminiFallback(clientApiKey, prompt);
     return cleanJsonResponse(result.response.text());
   } catch (err) {
     console.error('Roadmap Generation AI Error:', err.message);
@@ -220,9 +199,8 @@ Return ONLY raw JSON. No markdown.
 /**
  * Generate domain-specific AI intelligence guide.
  */
-export async function getDomainIntelligence(domainId, subDomainId, userLevel, clientApiKey) {
+export async function generateDomainIntelligence(domainId, subDomainId, userLevel, clientApiKey) {
   try {
-    const model = getGeminiModel(clientApiKey);
     const domainLabel = DOMAINS[domainId]?.label || domainId;
 
     const prompt = `
@@ -269,7 +247,7 @@ Provide comprehensive domain intelligence. Return ONLY valid JSON:
 }
 Return ONLY raw JSON. No markdown.
 `;
-    const result = await model.generateContent(prompt);
+    const result = await executeWithGeminiFallback(clientApiKey, prompt);
     return cleanJsonResponse(result.response.text());
   } catch (err) {
     console.error('Domain Intelligence AI Error:', err.message);
@@ -280,10 +258,8 @@ Return ONLY raw JSON. No markdown.
 /**
  * Match opportunity listings to user profile using AI.
  */
-export async function matchOpportunitiesToProfile(userProfile, opportunityType, clientApiKey) {
+export async function generateOpportunityRecommendations(userProfile, clientApiKey) {
   try {
-    const model = getGeminiModel(clientApiKey);
-
     const prompt = `
 You are a recruitment and opportunity matching specialist.
 
@@ -324,7 +300,7 @@ Generate 8 highly relevant, realistic opportunities. Return ONLY valid JSON:
 }
 Return ONLY raw JSON. No markdown.
 `;
-    const result = await model.generateContent(prompt);
+    const result = await executeWithGeminiFallback(clientApiKey, prompt);
     return cleanJsonResponse(result.response.text());
   } catch (err) {
     console.error('Opportunity Matching AI Error:', err.message);
@@ -337,7 +313,6 @@ Return ONLY raw JSON. No markdown.
  */
 export async function generateLearningRecommendations(userProfile, clientApiKey) {
   try {
-    const model = getGeminiModel(clientApiKey);
 
     const prompt = `
 You are an expert learning and development advisor.
@@ -382,7 +357,7 @@ Generate 6 highly personalized learning recommendations. Return ONLY valid JSON:
 }
 Return ONLY raw JSON. No markdown.
 `;
-    const result = await model.generateContent(prompt);
+    const result = await executeWithGeminiFallback(clientApiKey, prompt);
     return cleanJsonResponse(result.response.text());
   } catch (err) {
     console.error('Learning Recommendations AI Error:', err.message);

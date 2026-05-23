@@ -3,6 +3,7 @@ import multer from 'multer';
 import { extractTextFromBuffer } from '../utils/parser.js';
 import { analyzeResumeLocally } from '../utils/analyzer.js';
 import { analyzeResumeWithGemini, optimizeBulletPointWithGemini } from '../services/geminiService.js';
+import { executeWithGeminiFallback } from '../utils/geminiHelper.js';
 import { mapToCanonicalDomain } from '../utils/domainMapper.js';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
@@ -380,13 +381,23 @@ router.get('/verify-key', async (req, res) => {
     if (!clientApiKey) {
       return res.status(400).json({ error: 'API key is required.' });
     }
-    const genAI = new GoogleGenerativeAI(clientApiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-    await model.generateContent("Hello");
+    await executeWithGeminiFallback(clientApiKey, "Hello");
     res.json({ valid: true });
   } catch (error) {
     console.error('API Key Verification Error:', error);
-    const errorMessage = error.message || (error.error && error.error.message) || JSON.stringify(error) || 'Invalid API Key.';
+    
+    // User-friendly error mapping
+    let errorMessage = error.message || (error.error && error.error.message) || JSON.stringify(error) || 'Invalid API Key.';
+    if (errorMessage.includes('QUOTA_EXCEEDED') || errorMessage.includes('429')) {
+      errorMessage = 'Your API Key quota has been exceeded. Please upgrade your Google Cloud plan or wait for the reset.';
+    } else if (errorMessage.includes('INVALID_API_KEY') || errorMessage.includes('API key not valid')) {
+      errorMessage = 'Invalid API Key. Please verify your key in Google AI Studio and try again.';
+    } else if (errorMessage.includes('MODEL_UNAVAILABLE')) {
+      errorMessage = 'The Gemini API is temporarily unavailable or unsupported in your region.';
+    } else if (errorMessage.includes('fetch')) {
+      errorMessage = 'Network error while connecting to the Gemini API.';
+    }
+    
     res.status(401).json({ error: errorMessage, details: errorMessage });
   }
 });

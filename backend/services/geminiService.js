@@ -1,37 +1,5 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { DOMAINS } from '../data/careersData.js';
-
-/**
- * Helper to get the Gemini model instance.
- * @param {string} clientApiKey - Dynamically provided client API key (optional)
- * @returns {import('@google/generative-ai').GenerativeModel}
- */
-function getGeminiModel(clientApiKey) {
-  // Priority: 1. Client key passed in header, 2. Env variable
-  const apiKey = clientApiKey || process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error('Gemini API Key is missing. Please provide it in Settings or set GEMINI_API_KEY in the server environment.');
-  }
-  const genAI = new GoogleGenerativeAI(apiKey);
-  return genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
-    generationConfig: { responseMimeType: 'application/json' }
-  });
-}
-
-/**
- * Safely cleans and parses JSON responses from Gemini, stripping any markdown wrapper blocks if returned.
- * @param {string} text
- * @returns {object}
- */
-function cleanJsonResponse(text) {
-  let cleaned = text.trim();
-  if (cleaned.startsWith('```')) {
-    cleaned = cleaned.replace(/^```[a-zA-Z0-9]*\s*/, '');
-    cleaned = cleaned.replace(/\s*```$/, '');
-  }
-  return JSON.parse(cleaned.trim());
-}
+import { executeWithGeminiFallback, cleanJsonResponse } from '../utils/geminiHelper.js';
 
 /**
  * Analyzes resume text against a job description using Gemini, incorporating real-time scraped social profile data and generating a detailed employability audit.
@@ -43,7 +11,6 @@ function cleanJsonResponse(text) {
  */
 export async function analyzeResumeWithGemini(resumeText, jobDescription, scannedProfileData, clientApiKey, reqFile = null) {
   try {
-    const model = getGeminiModel(clientApiKey);
     const validDomainKeys = Object.keys(DOMAINS).join(', ');
 
     const githubSummary = scannedProfileData?.github 
@@ -181,7 +148,7 @@ Return ONLY a valid JSON object matching the following structure:
       });
     }
 
-    const result = await model.generateContent(promptParts);
+    const result = await executeWithGeminiFallback(clientApiKey, promptParts);
     const text = result.response.text();
     return cleanJsonResponse(text);
   } catch (error) {
@@ -199,8 +166,6 @@ Return ONLY a valid JSON object matching the following structure:
  */
 export async function optimizeBulletPointWithGemini(bulletPoint, jobDescription, clientApiKey) {
   try {
-    const model = getGeminiModel(clientApiKey);
-
     const prompt = `
 You are a professional resume writer and career coach.
 Optimize the following resume bullet point, tailoring it to stand out for a job with this Job Description (if provided).
@@ -229,7 +194,7 @@ Return ONLY a valid JSON object matching the following structure:
 Ensure all JSON fields are populated. Strictly return raw JSON only. Do not wrap the output in markdown code blocks.
 `;
 
-    const result = await model.generateContent(prompt);
+    const result = await executeWithGeminiFallback(clientApiKey, prompt);
     const text = result.response.text();
     return cleanJsonResponse(text);
   } catch (error) {
