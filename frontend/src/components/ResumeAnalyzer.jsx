@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Upload, FileText, Clipboard, Trash2, Play, AlertTriangle,
   CheckCircle, XCircle, Loader, FolderOpen, Sparkles, Brain,
-  BarChart3, FileSearch, Zap, X, ArrowRight
+  BarChart3, FileSearch, Zap, X, ArrowRight, Briefcase
 } from 'lucide-react';
 
 const SAMPLE_JD = `Senior Project Manager

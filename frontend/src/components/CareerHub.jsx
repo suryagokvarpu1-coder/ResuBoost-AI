@@ -56,7 +56,7 @@ export default function CareerHub({ user, apiKey, analysisResult }) {
   const isGibberish = (text) => {
     const cleaned = text.trim().toLowerCase();
     if (cleaned.length < 2) return true;
-    if (/(.)\\1{3,}/.test(cleaned)) return true;
+    if (/(.)\\1{3,}/.test(cleaned)) return true; // Repeated chars
     if (cleaned.length > 15 && !cleaned.includes(' ')) return true;
 
     const testWords = ['test', 'testing', 'asdf', 'qwer', 'zxcv', 'fake', 'dummy', 'rubbish', 'garbage', 'blah'];
