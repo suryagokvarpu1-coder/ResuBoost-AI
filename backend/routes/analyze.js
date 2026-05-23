@@ -327,7 +327,11 @@ router.post('/analyze', upload.single('resume'), async (req, res) => {
 
   } catch (error) {
     console.error('Analysis Endpoint Error:', error);
-    res.status(500).json({ error: 'Failed to analyze resume.', details: error.message });
+    const isClientError = error.message.includes('Failed to parse') || error.message.includes('Unsupported file type');
+    res.status(isClientError ? 400 : 500).json({ 
+      error: isClientError ? error.message : 'Failed to analyze resume due to a server error.', 
+      details: error.message 
+    });
   }
 });
 

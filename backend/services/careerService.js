@@ -119,8 +119,13 @@ User Current State:
 - Experience: ${userProfile.experience || '0 years'}
 - Target Role: ${targetRole || userProfile.goal || 'Senior professional in their field'}
 
+IMPORTANT VALIDATION INSTRUCTION:
+Check if the "Target Role" is a valid, meaningful, and career-related query (a job title, skill, domain, or learning path). If the input contains gibberish, random letters, spam, a non-career related phrase (e.g., "how to cook", "asdfg"), or is inappropriate, you MUST reject the request by setting "isValidRequest" to false and providing the "validationMessage". Do not generate the rest of the roadmap if it is invalid.
+
 Generate a detailed, realistic, and actionable career roadmap. Return ONLY valid JSON:
 {
+  "isValidRequest": <boolean: true if Target Role is valid, false otherwise>,
+  "validationMessage": "<If isValidRequest is false, strictly output: 'Please enter a valid career goal, skill, domain, or learning path.'>",
   "targetRole": "<final target role title>",
   "totalDuration": "<estimated total time e.g., 18 months>",
   "overview": "<2-sentence roadmap summary>",

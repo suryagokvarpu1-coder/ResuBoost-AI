@@ -28,8 +28,16 @@ export default function CareerHub({ user, apiKey, analysisResult }) {
   };
 
   const fetchRoadmap = async () => {
-    if (!targetRole) return;
+    const trimmedRole = targetRole.trim();
+    if (!trimmedRole) return;
+    
+    if (trimmedRole.length < 2) {
+      setData({ isValidRequest: false, validationMessage: "Please enter a valid career goal, skill, domain, or learning path." });
+      return;
+    }
+
     setLoading(true);
+    setData(null);
     try {
       const activeProfile = analysisResult?.extractedProfile || user?.preferences || { domain: 'general_professional', profession: 'Professional', experience: 'Fresher' };
       const res = await fetch('/api/career/roadmap', {
@@ -40,13 +48,19 @@ export default function CareerHub({ user, apiKey, analysisResult }) {
         },
         body: JSON.stringify({ 
           userProfile: activeProfile,
-          targetRole 
+          targetRole: trimmedRole 
         })
       });
       const result = await res.json();
-      setData(result);
+      
+      if (!res.ok) {
+        setData({ isValidRequest: false, validationMessage: result.error || "Please enter a valid career goal, skill, domain, or learning path." });
+      } else {
+        setData(result);
+      }
     } catch (err) {
       console.error(err);
+      setData({ isValidRequest: false, validationMessage: "A network error occurred. Please try again." });
     } finally {
       setLoading(false);
     }
@@ -144,7 +158,13 @@ export default function CareerHub({ user, apiKey, analysisResult }) {
                 </button>
               </div>
 
-              {data && (
+              {data && data.isValidRequest === false && data.validationMessage && (
+                <div style={{ padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderLeft: '4px solid #ef4444', borderRadius: '4px', marginBottom: '2rem', color: '#fca5a5' }}>
+                  ❌ {data.validationMessage}
+                </div>
+              )}
+
+              {data && data.isValidRequest !== false && data.targetRole && (
                 <div>
                   <h2 style={{ color: 'var(--color-secondary)', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1.5rem' }}>
                     Roadmap to {data.targetRole}

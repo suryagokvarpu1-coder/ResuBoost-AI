@@ -77,6 +77,19 @@ router.post('/roadmap', async (req, res) => {
     const { userProfile, targetRole } = req.body;
     if (!userProfile) return res.status(400).json({ error: 'User profile is required.' });
 
+    const trimmedTarget = targetRole ? targetRole.trim() : '';
+    if (!trimmedTarget || trimmedTarget.length < 2) {
+      return res.status(400).json({ error: 'Please enter a valid career goal, skill, domain, or learning path.' });
+    }
+
+    // Pre-validation heuristics: Reject obvious spam/gibberish
+    if (/(.)\1{4,}/.test(trimmedTarget)) {
+      return res.status(400).json({ error: 'Please enter a valid career goal, skill, domain, or learning path.' });
+    }
+    if (!/[a-zA-Z0-9]/.test(trimmedTarget)) {
+      return res.status(400).json({ error: 'Please enter a valid career goal, skill, domain, or learning path.' });
+    }
+
     const clientApiKey = req.headers['x-api-key'] || '';
     const hasApiKey = !!(clientApiKey || process.env.GEMINI_API_KEY);
 
@@ -98,7 +111,13 @@ router.post('/roadmap', async (req, res) => {
       });
     }
 
-    const result = await generateCareerRoadmap(userProfile, targetRole, clientApiKey);
+    const result = await generateCareerRoadmap(userProfile, trimmedTarget, clientApiKey);
+    
+    // Check if AI semantic validation rejected the request
+    if (result.isValidRequest === false) {
+      return res.status(400).json({ error: result.validationMessage || 'Please enter a valid career goal, skill, domain, or learning path.' });
+    }
+
     res.json({ ...result, isAI: true });
   } catch (err) {
     console.error('Roadmap Generation Error:', err);
