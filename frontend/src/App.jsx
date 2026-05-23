@@ -1,4 +1,9 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Search, Rocket, BookOpen, Briefcase, BarChart3,
+  Key, GraduationCap, Target, User, Sparkles, Zap
+} from 'lucide-react';
 import ResumeAnalyzer from './components/ResumeAnalyzer';
 import Dashboard from './components/Dashboard';
 import KeywordSuggestions from './components/KeywordSuggestions';
@@ -12,6 +17,30 @@ import Profile from './components/Profile';
 import CareerHub from './components/CareerHub';
 import LearningHub from './components/LearningHub';
 import OpportunityHub from './components/OpportunityHub';
+
+// Animation variants
+const pageVariants = {
+  initial: { opacity: 0, y: 20, scale: 0.98 },
+  animate: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } },
+  exit: { opacity: 0, y: -15, scale: 0.98, transition: { duration: 0.25 } }
+};
+
+const staggerContainer = {
+  animate: { transition: { staggerChildren: 0.08 } }
+};
+
+const navItems = [
+  { key: 'analyzer', label: 'Analyzer', icon: Search },
+  { key: 'career', label: 'Career Hub', icon: Rocket },
+  { key: 'learning', label: 'Learning', icon: BookOpen },
+  { key: 'opportunities', label: 'Opportunities', icon: Briefcase },
+];
+
+const resultNavItems = [
+  { key: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+  { key: 'keywords', label: 'Keywords', icon: Key },
+  { key: 'employability', label: 'Audit', icon: GraduationCap },
+];
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('analyzer');
@@ -27,18 +56,16 @@ export default function App() {
   useEffect(() => {
     let dbUnsubscribe = null;
     const authUnsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      // Clean up previous database listener if any
       if (dbUnsubscribe) {
         dbUnsubscribe();
         dbUnsubscribe = null;
       }
 
       if (currentUser) {
-        // Set up real-time listener for the user record
         const userDbRef = ref(db, `users/${currentUser.uid}`);
         dbUnsubscribe = onValue(userDbRef, (snapshot) => {
           const dbData = snapshot.val() || {};
-          
+
           setUser({
             uid: currentUser.uid,
             email: currentUser.email,
@@ -50,22 +77,19 @@ export default function App() {
             apiKey: dbData.apiKey || ''
           });
 
-          // Sync theme preference automatically
           if (dbData.preferences?.theme) {
             localStorage.setItem('resuboost_theme', dbData.preferences.theme);
             document.documentElement.setAttribute('data-theme', dbData.preferences.theme);
           }
-          
-          // Sync API Key automatically if it's set in the DB
+
           if (dbData.apiKey && typeof dbData.apiKey === 'string' && dbData.apiKey.trim() !== '') {
             localStorage.setItem('gemini_api_key', dbData.apiKey);
             setApiKey(dbData.apiKey);
           }
-          
+
           setAuthLoading(false);
         }, (error) => {
           console.error("Database sync error:", error);
-          // Fallback if permission denied
           setUser(currentUser);
           setAuthLoading(false);
         });
@@ -81,38 +105,36 @@ export default function App() {
     };
   }, []);
 
-  // Simulated Splash Progress Bar Loader
+  // Simulated Splash Progress
   useEffect(() => {
     const timer = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(timer);
-          setTimeout(() => {
-            setSplashLoading(false);
-          }, 300);
+          setTimeout(() => setSplashLoading(false), 400);
           return 100;
         }
         const step = Math.floor(Math.random() * 12) + 6;
-        const next = prev + step;
-        return next > 100 ? 100 : next;
+        return Math.min(prev + step, 100);
       });
     }, 120);
     return () => clearInterval(timer);
   }, []);
 
-  const getLoadingMessage = (val) => {
-    if (val < 25) return "Initializing core sandbox...";
-    if (val < 50) return "Loading neural ATS engines...";
-    if (val < 75) return "Configuring resume rubrics...";
-    if (val < 95) return "Establishing auth gateways...";
-    return "Launching platform...";
-  };
-
-  // Initialize theme from local storage
+  // Initialize theme
   useEffect(() => {
     const savedTheme = localStorage.getItem('resuboost_theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
   }, []);
+
+  const getLoadingMessage = (val) => {
+    if (val < 20) return "Initializing AI engines...";
+    if (val < 40) return "Loading ATS analysis modules...";
+    if (val < 60) return "Configuring resume rubrics...";
+    if (val < 80) return "Establishing secure connection...";
+    if (val < 95) return "Preparing your workspace...";
+    return "Launching platform...";
+  };
 
   const triggerUserRefresh = async () => {
     if (auth.currentUser) {
@@ -136,9 +158,7 @@ export default function App() {
 
   const handleAnalysisComplete = (result, jd) => {
     setAnalysisResult(result);
-    if (jd) {
-      setLastJd(jd);
-    }
+    if (jd) setLastJd(jd);
     setActiveTab('dashboard');
   };
 
@@ -149,406 +169,354 @@ export default function App() {
 
   const handleApiKeyUpdate = (newKey) => {
     setApiKey(newKey);
-    // If the user updates their API key, clear old offline analysis results
-    // so they are prompted to run a fresh scan with the AI key.
     if (analysisResult && !analysisResult.isAI) {
       setAnalysisResult(null);
     }
   };
 
+  // ═══════════════════════════════════════════════
+  // SPLASH SCREEN
+  // ═══════════════════════════════════════════════
   if (splashLoading || authLoading) {
     return (
-      <div className="app-container" style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        minHeight: '100vh',
-        background: 'var(--bg-base)',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        {/* Glowing Background Ambient Lights */}
-        <div className="ambient-orb orb-blue" style={{ width: '600px', height: '600px', opacity: 0.6 }}></div>
-        <div className="ambient-orb orb-pink" style={{ width: '600px', height: '600px', opacity: 0.4 }}></div>
+      <div className="app-container flex-center" style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
+        <div className="ambient-orb orb-blue" style={{ width: '600px', height: '600px', opacity: 0.6 }} />
+        <div className="ambient-orb orb-pink" style={{ width: '600px', height: '600px', opacity: 0.4 }} />
+        <div className="ambient-orb orb-accent" />
 
-        {/* 3D Glassmorphic Card Container */}
-        <div className="glass-card animate-slide-up" style={{ 
-          padding: '3.5rem 3rem', 
-          textAlign: 'center', 
-          display: 'flex', 
-          flexDirection: 'column', 
-          alignItems: 'center', 
-          gap: '2rem', 
-          maxWidth: '480px',
-          width: '90%',
-          boxShadow: 'var(--shadow-clay)',
-          borderRadius: 'var(--radius-lg)'
-        }}>
-          {/* Logo with pulsating neon ring */}
-          <div style={{ position: 'relative', marginBottom: '0.5rem' }}>
-            <div style={{
-              position: 'absolute',
-              top: '-15px',
-              left: '-15px',
-              right: '-15px',
-              bottom: '-15px',
-              borderRadius: '24px',
-              background: 'radial-gradient(circle, rgba(217, 70, 239, 0.4) 0%, transparent 70%)',
-              filter: 'blur(10px)',
-              animation: 'pulseGlow 2.5s ease-in-out infinite'
-            }} />
-            
-            <div style={{
-              width: '90px',
-              height: '90px',
-              background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%)',
-              borderRadius: '22px',
-              boxShadow: '0 12px 35px rgba(217, 70, 239, 0.4)',
-              padding: '4px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              animation: 'floatLogo 3s ease-in-out infinite',
-              position: 'relative',
-              zIndex: 2
-            }}>
-              <img src="/resuboost_logo.png" alt="ResuBoost Logo" style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} />
-            </div>
+        <motion.div
+          className="glass-card glass-card-static"
+          initial={{ opacity: 0, scale: 0.9, y: 30 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            padding: '3.5rem 3rem',
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 'var(--space-8)',
+            maxWidth: '460px',
+            width: '90%',
+          }}
+        >
+          {/* Animated Logo */}
+          <div style={{ position: 'relative' }}>
+            <motion.div
+              animate={{ scale: [0.9, 1.1, 0.9], opacity: [0.4, 0.7, 0.4] }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+              style={{
+                position: 'absolute', inset: '-18px',
+                borderRadius: 'var(--radius-lg)',
+                background: 'radial-gradient(circle, rgba(217, 70, 239, 0.4) 0%, transparent 70%)',
+                filter: 'blur(12px)',
+              }}
+            />
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              style={{
+                width: '88px', height: '88px',
+                background: 'var(--gradient-primary)',
+                borderRadius: '22px',
+                boxShadow: '0 12px 35px rgba(217, 70, 239, 0.35)',
+                padding: '3px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                position: 'relative', zIndex: 2,
+              }}
+            >
+              <img src="/resuboost_logo.png" alt="ResuBoost" style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} />
+            </motion.div>
           </div>
 
-          {/* Heading */}
+          {/* Title */}
           <div>
-            <h1 className="glow-text-gradient" style={{ 
-              fontSize: '2.5rem', 
-              fontWeight: 900, 
-              fontFamily: 'var(--font-display)',
-              letterSpacing: '-0.02em',
-              lineHeight: 1.1 
-            }}>
+            <h1 className="glow-text-gradient" style={{ fontSize: '2.25rem', letterSpacing: '-0.03em' }}>
               ResuBoost AI
             </h1>
-            <p style={{ 
-              color: 'var(--text-secondary)', 
-              fontSize: '0.95rem', 
-              marginTop: '0.5rem',
-              fontWeight: 500,
-              letterSpacing: '0.05em',
-              textTransform: 'uppercase'
-            }}>
-              Initializing Platform
-            </p>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: 'var(--space-2)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}
+            >
+              AI-Powered Career Platform
+            </motion.p>
           </div>
 
-          {/* Simulated loading bar with neon glow */}
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              fontSize: '0.8rem', 
-              color: 'var(--text-muted)',
-              fontWeight: 700,
-              fontFamily: 'monospace'
-            }}>
-              <span>{getLoadingMessage(progress)}</span>
-              <span style={{ color: 'var(--color-secondary)' }}>{progress}%</span>
+          {/* Progress Bar */}
+          <div style={{ width: '100%' }}>
+            <div className="flex-between" style={{ marginBottom: 'var(--space-2)' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
+                {getLoadingMessage(progress)}
+              </span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--color-primary)', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
+                {progress}%
+              </span>
             </div>
-
-            {/* Glassmorphic progress track */}
             <div style={{
-              width: '100%',
-              height: '14px',
-              background: 'rgba(8, 12, 24, 0.7)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              width: '100%', height: '10px',
+              background: 'var(--bg-input)',
+              border: '1px solid var(--border-color)',
               borderRadius: 'var(--radius-full)',
               padding: '2px',
-              boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.6)',
-              position: 'relative',
-              overflow: 'hidden'
+              overflow: 'hidden',
             }}>
-              {/* Highlight gradient fill */}
-              <div style={{
-                width: `${progress}%`,
-                height: '100%',
-                background: 'linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%)',
-                borderRadius: 'var(--radius-full)',
-                transition: 'width 0.15s cubic-bezier(0.1, 0.8, 0.2, 1)',
-                position: 'relative',
-                boxShadow: '0 0 10px rgba(217, 70, 239, 0.5)'
-              }}>
-                {/* Moving flare effect */}
+              <motion.div
+                style={{
+                  height: '100%',
+                  background: 'var(--gradient-primary)',
+                  borderRadius: 'var(--radius-full)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+              >
                 <div style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent)',
+                  position: 'absolute', inset: 0,
+                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+                  backgroundSize: '200% 100%',
                   animation: 'shimmer 1.5s infinite',
-                  backgroundSize: '200% 100%'
                 }} />
-              </div>
+              </motion.div>
             </div>
           </div>
 
-          {/* Bottom active tech stats for visually premium look */}
-          <div style={{
-            display: 'flex',
-            gap: '1.5rem',
-            borderTop: '1px solid var(--border-color)',
-            paddingTop: '1.25rem',
-            width: '100%',
-            justifyContent: 'center',
-            fontSize: '0.7rem',
-            color: 'var(--text-muted)',
-            fontFamily: 'monospace'
-          }}>
-            <span>HOST: localhost:5000</span>
+          {/* Status Footer */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="flex-center gap-4"
+            style={{
+              borderTop: '1px solid var(--border-color)',
+              paddingTop: 'var(--space-5)',
+              width: '100%',
+              fontSize: '0.65rem',
+              color: 'var(--text-muted)',
+              fontFamily: 'var(--font-mono)',
+              letterSpacing: '0.05em',
+            }}
+          >
+            <span className="flex-center gap-2">
+              <span className="status-dot status-dot-success" style={{ width: 6, height: 6 }} />
+              SECURE
+            </span>
             <span>•</span>
-            <span>SSL: SECURE HANDSHAKE</span>
+            <span>AI ENGINE READY</span>
             <span>•</span>
-            <span>SYS: ACTIVE</span>
-          </div>
-
-          {/* Inline animations styling */}
-          <style>{`
-            @keyframes pulseGlow {
-              0% { transform: scale(0.9); opacity: 0.5; }
-              50% { transform: scale(1.1); opacity: 0.8; }
-              100% { transform: scale(0.9); opacity: 0.5; }
-            }
-            @keyframes floatLogo {
-              0% { transform: translateY(0px) rotate(0deg); }
-              50% { transform: translateY(-8px) rotate(2deg); }
-              100% { transform: translateY(0px) rotate(0deg); }
-            }
-            @keyframes shimmer {
-              0% { background-position: -200% 0; }
-              100% { background-position: 200% 0; }
-            }
-          `}</style>
-        </div>
+            <span className="flex-center gap-2">
+              <Zap size={10} />
+              v2.0
+            </span>
+          </motion.div>
+        </motion.div>
       </div>
     );
   }
 
+  // ═══════════════════════════════════════════════
+  // AUTH SCREEN
+  // ═══════════════════════════════════════════════
   if (!user) {
     return (
       <div className="app-container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <div className="ambient-orb orb-blue"></div>
-        <div className="ambient-orb orb-pink"></div>
+        <div className="ambient-orb orb-blue" />
+        <div className="ambient-orb orb-pink" />
+        <div className="ambient-orb orb-accent" />
+
         <header className="navbar" style={{ justifyContent: 'center' }}>
-          <div className="logo">
+          <a href="/" className="logo" onClick={(e) => { e.preventDefault(); window.location.reload(); }}>
             <div className="logo-icon">
-              <img src="/resuboost_logo.png" alt="ResuBoost Logo" style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} />
+              <img src="/resuboost_logo.png" alt="ResuBoost" />
             </div>
-          </div>
+            <span className="glow-text-gradient">ResuBoost AI</span>
+          </a>
         </header>
-        <main className="main-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+
+        <main className="main-content flex-center" style={{ flex: 1 }}>
           <AuthScreen />
         </main>
-        <footer style={{ 
-          textAlign: 'center', 
-          padding: '2rem 1.5rem', 
-          marginTop: 'auto', 
-          borderTop: '1px solid var(--border-color)',
-          color: 'var(--text-muted)',
-          fontSize: '0.85rem'
-        }}>
-          <p>© {new Date().getFullYear()} ResuBoost AI. All rights reserved. Crafted for visual excellence & premium ATS parsing.</p>
+
+        <footer className="app-footer">
+          <p>© {new Date().getFullYear()} ResuBoost AI. All rights reserved.</p>
         </footer>
       </div>
     );
   }
 
+  // ═══════════════════════════════════════════════
+  // MAIN APP
+  // ═══════════════════════════════════════════════
   return (
     <div className="app-container">
-      {/* Ambient background 3D floating layers */}
-      <div className="ambient-orb orb-blue"></div>
-      <div className="ambient-orb orb-pink"></div>
+      <div className="ambient-orb orb-blue" />
+      <div className="ambient-orb orb-pink" />
 
-      {/* Navigation Header */}
+      {/* ── NAVBAR ── */}
       <header className="navbar">
         <a href="/" className="logo" onClick={(e) => { e.preventDefault(); window.location.reload(); }}>
           <div className="logo-icon">
-            <img src="/resuboost_logo.png" alt="ResuBoost Logo" style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} />
+            <img src="/resuboost_logo.png" alt="ResuBoost" />
           </div>
+          <span className="glow-text-gradient" style={{ fontSize: '1.25rem' }}>ResuBoost</span>
         </a>
 
         <nav className="nav-links">
-          <button 
-            className={`nav-link ${activeTab === 'analyzer' ? 'active' : ''}`}
-            onClick={() => setActiveTab('analyzer')}
-          >
-            🔍 Analyzer
-          </button>
+          {navItems.map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              className={`nav-link ${activeTab === key ? 'active' : ''}`}
+              onClick={() => setActiveTab(key)}
+            >
+              <Icon size={15} className="nav-icon" />
+              <span>{label}</span>
+            </button>
+          ))}
 
-          <button 
-            className={`nav-link ${activeTab === 'career' ? 'active' : ''}`}
-            onClick={() => setActiveTab('career')}
-          >
-            🚀 Career Hub
-          </button>
-          
-          <button 
-            className={`nav-link ${activeTab === 'learning' ? 'active' : ''}`}
-            onClick={() => setActiveTab('learning')}
-          >
-            📚 Learning
-          </button>
-          
-          <button 
-            className={`nav-link ${activeTab === 'opportunities' ? 'active' : ''}`}
-            onClick={() => setActiveTab('opportunities')}
-          >
-            💼 Opportunities
-          </button>
-          
-          {analysisResult && (
-            <>
-              <button 
-                className={`nav-link ${activeTab === 'dashboard' ? 'active' : ''}`}
-                onClick={() => setActiveTab('dashboard')}
-              >
-                📊 Dashboard
-              </button>
-              
-              <button 
-                className={`nav-link ${activeTab === 'keywords' ? 'active' : ''}`}
-                onClick={() => setActiveTab('keywords')}
-              >
-                🔑 Keywords
-              </button>
+          {analysisResult && resultNavItems.map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              className={`nav-link ${activeTab === key ? 'active' : ''}`}
+              onClick={() => setActiveTab(key)}
+            >
+              <Icon size={15} className="nav-icon" />
+              <span>{label}</span>
+            </button>
+          ))}
 
-              <button 
-                className={`nav-link ${activeTab === 'employability' ? 'active' : ''}`}
-                onClick={() => setActiveTab('employability')}
-              >
-                🎓 Employability Audit
-              </button>
-            </>
-          )}
-
-          <button 
+          <button
             className={`nav-link ${activeTab === 'optimizer' ? 'active' : ''}`}
             onClick={() => setActiveTab('optimizer')}
           >
-            🎯 Bullet Optimizer
+            <Target size={15} className="nav-icon" />
+            <span>Optimizer</span>
           </button>
         </nav>
 
-        {/* User profile section */}
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          {/* Profile clickable icon section */}
-          <button 
-            onClick={() => setActiveTab('profile')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              background: activeTab === 'profile' 
-                ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(217, 70, 239, 0.2) 100%)' 
-                : 'var(--bg-input)',
-              border: activeTab === 'profile' 
-                ? '1px solid var(--color-primary)' 
-                : '1px solid var(--border-color)',
-              borderRadius: 'var(--radius-full)',
-              cursor: 'pointer',
-              boxShadow: activeTab === 'profile' 
-                ? '0 0 15px rgba(59, 130, 246, 0.3), inset 1px 1px 3px rgba(0,0,0,0.5)' 
-                : 'var(--shadow-btn-3d)',
-              transform: activeTab === 'profile' ? 'translateY(1px)' : 'translateY(-2px)',
-              transition: 'all var(--transition-fast)',
-              padding: 0
-            }}
-            title="View Profile"
-          >
-            {user.photoURL ? (
-              user.photoURL.length <= 2 ? (
-                <span style={{ fontSize: '1.2rem' }}>{user.photoURL}</span>
-              ) : (
-                <img 
-                  src={user.photoURL} 
-                  alt="Profile" 
-                  style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} 
-                />
-              )
+        {/* Profile Avatar */}
+        <motion.button
+          onClick={() => setActiveTab('profile')}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.95 }}
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            width: '40px', height: '40px',
+            background: activeTab === 'profile'
+              ? 'var(--gradient-primary)'
+              : 'var(--bg-input)',
+            border: activeTab === 'profile'
+              ? '2px solid var(--color-primary)'
+              : '1px solid var(--border-color)',
+            borderRadius: 'var(--radius-full)',
+            cursor: 'pointer',
+            boxShadow: activeTab === 'profile'
+              ? '0 0 15px rgba(59, 130, 246, 0.3)'
+              : 'var(--shadow-clay-sm)',
+            padding: 0,
+            overflow: 'hidden',
+            flexShrink: 0,
+          }}
+          title="Profile"
+        >
+          {user.photoURL ? (
+            user.photoURL.length <= 2 ? (
+              <span style={{ fontSize: '1.15rem' }}>{user.photoURL}</span>
             ) : (
-              <span style={{ fontSize: '1.2rem' }}>👤</span>
-            )}
-          </button>
-        </div>
+              <img
+                src={user.photoURL}
+                alt="Profile"
+                style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }}
+              />
+            )
+          ) : (
+            <User size={18} style={{ color: 'var(--text-muted)' }} />
+          )}
+        </motion.button>
       </header>
 
-      {/* Main Content Area */}
+      {/* ── MAIN CONTENT ── */}
       <main className="main-content">
-        {activeTab === 'analyzer' && (
-          <ResumeAnalyzer 
-            apiKey={apiKey} 
-            onAnalysisComplete={handleAnalysisComplete} 
-          />
-        )}
-        
-        {activeTab === 'dashboard' && analysisResult && (
-          <Dashboard 
-            data={analysisResult} 
-            onReset={handleReset} 
-          />
-        )}
+        <AnimatePresence mode="wait">
+          {activeTab === 'analyzer' && (
+            <motion.div key="analyzer" variants={pageVariants} initial="initial" animate="animate" exit="exit">
+              <ResumeAnalyzer apiKey={apiKey} onAnalysisComplete={handleAnalysisComplete} />
+            </motion.div>
+          )}
 
-        {activeTab === 'keywords' && analysisResult && (
-          <KeywordSuggestions 
-            data={analysisResult} 
-          />
-        )}
+          {activeTab === 'dashboard' && analysisResult && (
+            <motion.div key="dashboard" variants={pageVariants} initial="initial" animate="animate" exit="exit">
+              <Dashboard data={analysisResult} onReset={handleReset} />
+            </motion.div>
+          )}
 
-        {activeTab === 'employability' && analysisResult && (
-          <EmployabilityAudit 
-            data={analysisResult} 
-          />
-        )}
+          {activeTab === 'keywords' && analysisResult && (
+            <motion.div key="keywords" variants={pageVariants} initial="initial" animate="animate" exit="exit">
+              <KeywordSuggestions data={analysisResult} />
+            </motion.div>
+          )}
 
-        {activeTab === 'optimizer' && (
-          <BulletOptimizer 
-            apiKey={apiKey} 
-            defaultJd={lastJd} 
-          />
-        )}
+          {activeTab === 'employability' && analysisResult && (
+            <motion.div key="employability" variants={pageVariants} initial="initial" animate="animate" exit="exit">
+              <EmployabilityAudit data={analysisResult} />
+            </motion.div>
+          )}
 
-        {activeTab === 'career' && (
-          <CareerHub user={user} apiKey={apiKey} analysisResult={analysisResult} />
-        )}
+          {activeTab === 'optimizer' && (
+            <motion.div key="optimizer" variants={pageVariants} initial="initial" animate="animate" exit="exit">
+              <BulletOptimizer apiKey={apiKey} defaultJd={lastJd} />
+            </motion.div>
+          )}
 
-        {activeTab === 'learning' && (
-          <LearningHub user={user} apiKey={apiKey} analysisResult={analysisResult} />
-        )}
+          {activeTab === 'career' && (
+            <motion.div key="career" variants={pageVariants} initial="initial" animate="animate" exit="exit">
+              <CareerHub user={user} apiKey={apiKey} analysisResult={analysisResult} />
+            </motion.div>
+          )}
 
-        {activeTab === 'opportunities' && (
-          <OpportunityHub user={user} apiKey={apiKey} analysisResult={analysisResult} />
-        )}
+          {activeTab === 'learning' && (
+            <motion.div key="learning" variants={pageVariants} initial="initial" animate="animate" exit="exit">
+              <LearningHub user={user} apiKey={apiKey} analysisResult={analysisResult} />
+            </motion.div>
+          )}
 
-        {activeTab === 'profile' && (
-          <Profile 
-            key={user.uid}
-            user={user} 
-            apiKey={apiKey} 
-            setApiKey={handleApiKeyUpdate}
-            onProfileUpdate={triggerUserRefresh}
-          />
-        )}
+          {activeTab === 'opportunities' && (
+            <motion.div key="opportunities" variants={pageVariants} initial="initial" animate="animate" exit="exit">
+              <OpportunityHub user={user} apiKey={apiKey} analysisResult={analysisResult} />
+            </motion.div>
+          )}
+
+          {activeTab === 'profile' && (
+            <motion.div key="profile" variants={pageVariants} initial="initial" animate="animate" exit="exit">
+              <Profile
+                key={user.uid}
+                user={user}
+                apiKey={apiKey}
+                setApiKey={handleApiKeyUpdate}
+                onProfileUpdate={triggerUserRefresh}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
-      {/* Modern Footer */}
-      <footer style={{ 
-        textAlign: 'center', 
-        padding: '2rem 1.5rem', 
-        marginTop: 'auto', 
-        borderTop: '1px solid var(--border-color)',
-        color: 'var(--text-muted)',
-        fontSize: '0.85rem'
-      }}>
-        <p>© {new Date().getFullYear()} ResuBoost AI. All rights reserved. Crafted for visual excellence & premium ATS parsing.</p>
+      {/* ── FOOTER ── */}
+      <footer className="app-footer">
+        <div className="flex-center gap-6" style={{ marginBottom: 'var(--space-2)' }}>
+          <span className="flex-center gap-2">
+            <Sparkles size={12} />
+            AI-Powered
+          </span>
+          <span>•</span>
+          <span>ATS Optimized</span>
+          <span>•</span>
+          <span className="flex-center gap-2">
+            <Zap size={12} />
+            Real-time Analysis
+          </span>
+        </div>
+        <p>© {new Date().getFullYear()} ResuBoost AI. Crafted for excellence.</p>
       </footer>
     </div>
   );

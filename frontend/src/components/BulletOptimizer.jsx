@@ -1,4 +1,12 @@
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Target, Sparkles, Copy, Check, FileText, Send, BarChart3, Star, Zap, Loader, AlertTriangle, Brain } from 'lucide-react';
+
+const variantConfig = [
+  { key: 'actionOriented', label: 'Action-Oriented', color: 'var(--color-primary)', icon: Zap, description: 'Strong action verbs with direct impact' },
+  { key: 'metricFocused', label: 'Metric-Focused', color: 'var(--color-success)', icon: BarChart3, description: 'Quantified results and measurable outcomes' },
+  { key: 'starFormat', label: 'STAR Method', color: 'var(--color-secondary)', icon: Star, description: 'Situation → Task → Action → Result format' },
+];
 
 export default function BulletOptimizer({ apiKey, defaultJd = '' }) {
   const [bulletPoint, setBulletPoint] = useState('');
@@ -11,7 +19,7 @@ export default function BulletOptimizer({ apiKey, defaultJd = '' }) {
   const handleOptimize = async (e) => {
     e.preventDefault();
     setError('');
-    
+
     if (!bulletPoint.trim()) {
       setError('Please paste a resume bullet point to optimize.');
       return;
@@ -21,23 +29,15 @@ export default function BulletOptimizer({ apiKey, defaultJd = '' }) {
 
     try {
       const headers = { 'Content-Type': 'application/json' };
-      if (apiKey) {
-        headers['x-api-key'] = apiKey;
-      }
+      if (apiKey) headers['x-api-key'] = apiKey;
 
       const response = await fetch('/api/optimize-bullet', {
         method: 'POST',
         headers,
-        body: JSON.stringify({
-          bulletPoint,
-          jobDescription
-        })
+        body: JSON.stringify({ bulletPoint, jobDescription })
       });
 
-      if (!response.ok) {
-        throw new Error('Server failed to optimize bullet point.');
-      }
-
+      if (!response.ok) throw new Error('Server failed to optimize bullet point.');
       const data = await response.json();
       setResults(data);
     } catch (err) {
@@ -55,36 +55,57 @@ export default function BulletOptimizer({ apiKey, defaultJd = '' }) {
   };
 
   return (
-    <div className="animate-slide-up" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      
-      {/* Intro Banner */}
-      <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
-        <h2 style={{ fontSize: '2.2rem', fontFamily: 'var(--font-display)', fontWeight: 800, marginBottom: '0.5rem' }}>
-          🎯 AI <span className="glow-text-gradient">Bullet Point Optimizer</span>
-        </h2>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', maxWidth: '600px', margin: '0 auto' }}>
-          Paste a single weak bullet point from your resume. Get three professionally rewritten, impact-driven alternatives.
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-col gap-8">
+      {/* Header */}
+      <div className="text-center">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{ fontSize: '2rem', marginBottom: 'var(--space-3)' }}
+        >
+          <span className="flex-center gap-3" style={{ justifyContent: 'center' }}>
+            <Target size={28} style={{ color: 'var(--color-primary)' }} />
+            AI <span className="glow-text-gradient">Bullet Optimizer</span>
+          </span>
+        </motion.h2>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', maxWidth: '550px', margin: '0 auto' }}>
+          Transform weak bullet points into high-impact, ATS-optimized statements.
         </p>
       </div>
 
-      {error && (
-        <div className="badge badge-danger animate-fade-in" style={{ display: 'block', padding: '0.75rem', textAlign: 'center' }}>
-          ⚠️ {error}
-        </div>
-      )}
+      {/* Error */}
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+            className="badge badge-danger"
+            style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', padding: 'var(--space-3) var(--space-4)', width: '100%', textTransform: 'none', letterSpacing: 0 }}
+          >
+            <AlertTriangle size={16} /> {error}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Sandbox Grid */}
       <div className="grid-2" style={{ alignItems: 'flex-start' }}>
-        
-        {/* Left Side: Inputs */}
-        <div className="glass-card">
-          <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-display)', marginBottom: '1.25rem' }}>
-            Optimization Sandbox
-          </h3>
+        {/* Input Panel */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
+          className="glass-card glass-card-static"
+        >
+          <div className="section-header" style={{ marginBottom: 'var(--space-5)' }}>
+            <div className="section-icon"><FileText size={20} /></div>
+            <div>
+              <div className="section-title" style={{ fontSize: '1.1rem' }}>Optimization Input</div>
+              <div className="section-subtitle">Paste your bullet point & optional JD</div>
+            </div>
+          </div>
 
-          <form onSubmit={handleOptimize} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <form onSubmit={handleOptimize} className="flex-col gap-5">
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label" htmlFor="bullet-input">Your Resume Bullet Point</label>
+              <div className="flex-between mb-2">
+                <label className="form-label" htmlFor="bullet-input" style={{ margin: 0 }}>Resume Bullet Point</label>
+                {bulletPoint && <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{bulletPoint.length} chars</span>}
+              </div>
               <textarea
                 id="bullet-input"
                 className="form-textarea"
@@ -97,130 +118,107 @@ export default function BulletOptimizer({ apiKey, defaultJd = '' }) {
             </div>
 
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label" htmlFor="jd-input">Target Job Description (Optional context)</label>
+              <label className="form-label" htmlFor="jd-input">Target Job Description (Optional)</label>
               <textarea
                 id="jd-input"
                 className="form-textarea"
-                placeholder="Paste the job description here to tailor rewrite keywords..."
-                rows={5}
+                placeholder="Paste a job description for keyword-targeted rewrites..."
+                rows={4}
                 value={jobDescription}
                 onChange={(e) => setJobDescription(e.target.value)}
               />
             </div>
 
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '0.85rem' }} disabled={loading}>
-              {loading ? 'Optimizing Bullet...' : '✨ Rewrite Bullet Point'}
-            </button>
+            <motion.button
+              type="submit" className="btn btn-primary w-full" style={{ padding: '0.85rem' }}
+              disabled={loading} whileTap={{ scale: 0.98 }}
+            >
+              {loading ? (
+                <span className="flex-center gap-2"><Loader size={16} style={{ animation: 'spin 1s linear infinite' }} /> Optimizing...</span>
+              ) : (
+                <span className="flex-center gap-2"><Sparkles size={16} /> Rewrite Bullet Point</span>
+              )}
+            </motion.button>
           </form>
-        </div>
+        </motion.div>
 
-        {/* Right Side: Results */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        {/* Results Panel */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }}
+          className="flex-col gap-4"
+        >
           {loading ? (
-            <div className="glass-card" style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              padding: '6rem 2rem', 
-              gap: '1rem',
-              height: '100%'
-            }}>
-              <div style={{
-                width: '40px',
-                height: '40px',
-                border: '3px solid rgba(168, 85, 247, 0.1)',
-                borderTop: '3px solid var(--color-secondary)',
-                borderRadius: '50%',
-                animation: 'spin 0.8s linear infinite'
-              }} />
-              <p style={{ color: 'var(--text-secondary)' }}>Generating high-impact alternatives...</p>
+            // Loading skeleton
+            <div className="glass-card glass-card-static flex-center flex-col gap-4" style={{ padding: 'var(--space-16) var(--space-8)' }}>
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+              >
+                <Brain size={36} style={{ color: 'var(--color-secondary)' }} />
+              </motion.div>
+              <p style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>Generating high-impact alternatives...</p>
+              <div className="flex-col gap-3 w-full" style={{ marginTop: 'var(--space-4)' }}>
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="skeleton skeleton-card" style={{ height: '80px' }} />
+                ))}
+              </div>
             </div>
           ) : results ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              
-              {/* Info banner about AI / Offline */}
-              <div className="badge badge-info" style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 1rem', fontSize: '0.8rem' }}>
-                <span>{results.isAI ? '🤖 Powered by Gemini 1.5 Flash' : '🔌 Generated locally using pre-compiled action verbiage templates.'}</span>
-              </div>
+            <>
+              {/* AI/Offline indicator */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+                className={`badge ${results.isAI ? 'badge-info' : 'badge-accent'}`}
+                style={{ padding: 'var(--space-2) var(--space-4)', fontSize: '0.8rem', textTransform: 'none', letterSpacing: 0 }}
+              >
+                {results.isAI ? <Sparkles size={13} /> : <Zap size={13} />}
+                {results.isAI ? 'Powered by Gemini AI' : 'Generated with local templates'}
+              </motion.div>
 
-              {/* Action-Oriented */}
-              <div className="glass-card" style={{ position: 'relative', borderLeft: '3px solid var(--color-primary)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-primary)', textTransform: 'uppercase' }}>
-                    Option 1: Action-Oriented
-                  </span>
-                  <button 
-                    onClick={() => handleCopy(results.actionOriented, 'action')}
-                    className="btn btn-secondary" 
-                    style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
-                  >
-                    {copiedText === 'action' ? 'Copied! ✓' : 'Copy'}
-                  </button>
-                </div>
-                <p style={{ fontSize: '0.95rem', color: 'var(--text-primary)', lineHeight: '1.5' }}>
-                  {results.actionOriented}
-                </p>
-              </div>
-
-              {/* Metric-Focused */}
-              <div className="glass-card" style={{ position: 'relative', borderLeft: '3px solid var(--color-success)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-success)', textTransform: 'uppercase' }}>
-                    Option 2: Metric-Focused
-                  </span>
-                  <button 
-                    onClick={() => handleCopy(results.metricFocused, 'metric')}
-                    className="btn btn-secondary" 
-                    style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
-                  >
-                    {copiedText === 'metric' ? 'Copied! ✓' : 'Copy'}
-                  </button>
-                </div>
-                <p style={{ fontSize: '0.95rem', color: 'var(--text-primary)', lineHeight: '1.5' }}>
-                  {results.metricFocused}
-                </p>
-              </div>
-
-              {/* STAR Method */}
-              <div className="glass-card" style={{ position: 'relative', borderLeft: '3px solid var(--color-secondary)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-secondary)', textTransform: 'uppercase' }}>
-                    Option 3: STAR Method
-                  </span>
-                  <button 
-                    onClick={() => handleCopy(results.starFormat, 'star')}
-                    className="btn btn-secondary" 
-                    style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
-                  >
-                    {copiedText === 'star' ? 'Copied! ✓' : 'Copy'}
-                  </button>
-                </div>
-                <p style={{ fontSize: '0.95rem', color: 'var(--text-primary)', whiteSpace: 'pre-line', lineHeight: '1.5' }}>
-                  {results.starFormat}
-                </p>
-              </div>
-
-            </div>
+              {/* Result Cards */}
+              {variantConfig.map(({ key, label, color, icon: Icon, description }, idx) => (
+                <motion.div
+                  key={key}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="glass-card glass-card-sm glass-card-static"
+                  style={{ borderLeft: `3px solid ${color}` }}
+                >
+                  <div className="flex-between" style={{ marginBottom: 'var(--space-3)' }}>
+                    <div className="flex-center gap-2">
+                      <Icon size={16} style={{ color }} />
+                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                        {label}
+                      </span>
+                    </div>
+                    <motion.button
+                      onClick={() => handleCopy(results[key], key)}
+                      className="btn btn-ghost btn-sm"
+                      style={{ fontSize: '0.75rem', gap: '4px' }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      {copiedText === key ? (
+                        <><Check size={13} style={{ color: 'var(--color-success)' }} /> Copied</>
+                      ) : (
+                        <><Copy size={13} /> Copy</>
+                      )}
+                    </motion.button>
+                  </div>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--text-primary)', lineHeight: 1.6, whiteSpace: key === 'starFormat' ? 'pre-line' : 'normal' }}>
+                    {results[key]}
+                  </p>
+                </motion.div>
+              ))}
+            </>
           ) : (
-            <div className="glass-card" style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              textAlign: 'center', 
-              padding: '6rem 2rem', 
-              color: 'var(--text-secondary)',
-              height: '100%'
-            }}>
-              <div>
-                <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>✨</span>
-                <p>Your optimized bullet points will appear here.</p>
-              </div>
+            <div className="glass-card glass-card-static flex-center flex-col gap-4 text-center" style={{ padding: 'var(--space-16) var(--space-8)' }}>
+              <Sparkles size={40} style={{ color: 'var(--text-muted)', opacity: 0.4 }} />
+              <p style={{ color: 'var(--text-muted)' }}>Your optimized bullet points will appear here.</p>
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
-
-    </div>
+    </motion.div>
   );
 }

@@ -1,4 +1,10 @@
 import { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Upload, FileText, Clipboard, Trash2, Play, AlertTriangle,
+  CheckCircle, XCircle, Loader, FolderOpen, Sparkles, Brain,
+  BarChart3, FileSearch, Zap, X, ArrowRight
+} from 'lucide-react';
 
 const SAMPLE_JD = `Senior Project Manager
 We are seeking an experienced Project Manager to lead cross-functional teams in delivering high-impact projects.
@@ -40,36 +46,31 @@ B.S. in Business Administration | State University (2013 - 2017)
 SKILLS
 Project Management, Agile & Scrum, Risk Assessment, Cross-Functional Leadership, Budgeting, Jira, Asana, Microsoft Project, Stakeholder Communication.`;
 
+const loadingSteps = [
+  { icon: FileSearch, text: 'Parsing file contents...' },
+  { icon: Brain, text: 'Analyzing resume structure...' },
+  { icon: Sparkles, text: 'Extracting key skills & technologies...' },
+  { icon: BarChart3, text: 'Matching against job requirements...' },
+  { icon: Zap, text: 'Connecting to AI engine...' },
+  { icon: CheckCircle, text: 'Generating scoring reports...' },
+];
+
 export default function ResumeAnalyzer({ apiKey, onAnalysisComplete }) {
-  const [uploadMode, setUploadMode] = useState('single'); // 'single' | 'batch'
-  
-  // Single Mode
+  const [uploadMode, setUploadMode] = useState('single');
+
   const [file, setFile] = useState(null);
   const [resumeText, setResumeText] = useState('');
-  
-  // Batch Mode
   const [batchQueue, setBatchQueue] = useState([]);
   const [isBatchProcessing, setIsBatchProcessing] = useState(false);
-  
-  // Shared
   const [jobDescription, setJobDescription] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const [error, setError] = useState('');
-  
+
   const fileInputRef = useRef(null);
   const batchInputRef = useRef(null);
   const folderInputRef = useRef(null);
-
-  const loadingMessages = [
-    'Parsing file contents...',
-    'Analyzing resume structure...',
-    'Extracting key skills & technologies...',
-    'Matching against job requirements...',
-    'Connecting to AI engine for custom insights...',
-    'Generating scoring reports...'
-  ];
 
   const allowedTypes = [
     'application/pdf',
@@ -78,23 +79,17 @@ export default function ResumeAnalyzer({ apiKey, onAnalysisComplete }) {
     'text/plain'
   ];
 
-  const isFileValid = (f) => allowedTypes.includes(f.type) || 
-      f.name.endsWith('.pdf') || f.name.endsWith('.docx') || f.name.endsWith('.doc') || f.name.endsWith('.txt');
+  const isFileValid = (f) => allowedTypes.includes(f.type) ||
+    f.name.endsWith('.pdf') || f.name.endsWith('.docx') || f.name.endsWith('.doc') || f.name.endsWith('.txt');
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
+  const handleDragOver = (e) => { e.preventDefault(); setIsDragging(true); };
+  const handleDragLeave = () => { setIsDragging(false); };
 
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
     setError('');
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       if (uploadMode === 'single') {
         if (isFileValid(e.dataTransfer.files[0])) {
@@ -105,16 +100,10 @@ export default function ResumeAnalyzer({ apiKey, onAnalysisComplete }) {
         }
       } else {
         const newFiles = Array.from(e.dataTransfer.files).filter(isFileValid).map(f => ({
-          file: f,
-          status: 'Pending',
-          data: null,
-          errorMsg: ''
+          file: f, status: 'Pending', data: null, errorMsg: ''
         }));
-        if (newFiles.length === 0) {
-          setError('No valid resume files found in drop.');
-        } else {
-          setBatchQueue(prev => [...prev, ...newFiles]);
-        }
+        if (newFiles.length === 0) setError('No valid resume files found in drop.');
+        else setBatchQueue(prev => [...prev, ...newFiles]);
       }
     }
   };
@@ -127,22 +116,14 @@ export default function ResumeAnalyzer({ apiKey, onAnalysisComplete }) {
     setError('');
   };
 
-  // Process a single file against the API
   const processResumeAPI = async (activeFile, activeText, jd) => {
     const formData = new FormData();
     if (activeFile) formData.append('resume', activeFile);
     else formData.append('resumeText', activeText);
     formData.append('jobDescription', jd);
-
     const headers = {};
     if (apiKey) headers['x-api-key'] = apiKey;
-
-    const response = await fetch('/api/analyze', {
-      method: 'POST',
-      headers,
-      body: formData
-    });
-
+    const response = await fetch('/api/analyze', { method: 'POST', headers, body: formData });
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.error || 'Server returned an error.');
@@ -156,11 +137,9 @@ export default function ResumeAnalyzer({ apiKey, onAnalysisComplete }) {
       setError('Please upload a resume file or paste your resume text.');
       return;
     }
-
     setLoading(true);
     setLoadingStep(0);
-    const interval = setInterval(() => setLoadingStep((prev) => (prev + 1) % loadingMessages.length), 1500);
-
+    const interval = setInterval(() => setLoadingStep((prev) => (prev + 1) % loadingSteps.length), 1500);
     try {
       const data = await processResumeAPI(file, resumeText, jobDescription);
       onAnalysisComplete(data, jobDescription);
@@ -180,116 +159,211 @@ export default function ResumeAnalyzer({ apiKey, onAnalysisComplete }) {
     }
     setIsBatchProcessing(true);
     setError('');
-
     for (let i = 0; i < batchQueue.length; i++) {
       if (batchQueue[i].status !== 'Pending' && batchQueue[i].status !== 'Failed') continue;
-
-      // Mark as Analyzing
-      setBatchQueue(prev => {
-        const newQ = [...prev];
-        newQ[i].status = 'Analyzing';
-        return newQ;
-      });
-
+      setBatchQueue(prev => { const q = [...prev]; q[i].status = 'Analyzing'; return q; });
       try {
         const data = await processResumeAPI(batchQueue[i].file, '', jobDescription);
-        setBatchQueue(prev => {
-          const newQ = [...prev];
-          newQ[i].status = 'Completed';
-          newQ[i].data = data;
-          return newQ;
-        });
+        setBatchQueue(prev => { const q = [...prev]; q[i].status = 'Completed'; q[i].data = data; return q; });
       } catch (err) {
-        setBatchQueue(prev => {
-          const newQ = [...prev];
-          newQ[i].status = 'Failed';
-          newQ[i].errorMsg = err.message;
-          return newQ;
-        });
+        setBatchQueue(prev => { const q = [...prev]; q[i].status = 'Failed'; q[i].errorMsg = err.message; return q; });
       }
     }
     setIsBatchProcessing(false);
   };
 
+  // ── LOADING STATE ──
   if (loading && uploadMode === 'single') {
+    const CurrentIcon = loadingSteps[loadingStep].icon;
     return (
-      <div className="glass-card animate-fade-in" style={{ textAlign: 'center', padding: '4rem 2rem', maxWidth: '600px', margin: '2rem auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
-        <div style={{ width: '70px', height: '70px', border: '4px solid rgba(59, 130, 246, 0.1)', borderTop: '4px solid var(--color-primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-        <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
-        <h3 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-display)', marginTop: '1rem' }}>Analyzing Resume</h3>
-        <p className="glow-text-primary" style={{ fontSize: '1.1rem', height: '1.5rem', transition: 'all 0.3s' }}>{loadingMessages[loadingStep]}</p>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="glass-card glass-card-static text-center"
+        style={{ padding: 'var(--space-16) var(--space-8)', maxWidth: '550px', margin: '3rem auto' }}
+      >
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+          style={{
+            width: '72px', height: '72px',
+            borderRadius: '50%',
+            border: '3px solid var(--border-color)',
+            borderTopColor: 'var(--color-primary)',
+            margin: '0 auto var(--space-6)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+        >
+          <motion.div
+            animate={{ rotate: -360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+          >
+            <CurrentIcon size={28} style={{ color: 'var(--color-primary)' }} />
+          </motion.div>
+        </motion.div>
+
+        <h3 style={{ fontSize: '1.5rem', marginBottom: 'var(--space-4)' }}>Analyzing Resume</h3>
+
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={loadingStep}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="glow-text-primary"
+            style={{ fontSize: '1rem', fontWeight: 600 }}
+          >
+            {loadingSteps[loadingStep].text}
+          </motion.p>
+        </AnimatePresence>
+
+        {/* Step indicators */}
+        <div className="flex-center gap-2" style={{ marginTop: 'var(--space-6)' }}>
+          {loadingSteps.map((_, i) => (
+            <motion.div
+              key={i}
+              animate={{
+                background: i === loadingStep ? 'var(--color-primary)' : i < loadingStep ? 'var(--color-success)' : 'var(--border-color)',
+                scale: i === loadingStep ? 1.3 : 1,
+              }}
+              style={{ width: 8, height: 8, borderRadius: '50%' }}
+            />
+          ))}
+        </div>
+      </motion.div>
     );
   }
 
+  // ── MAIN UI ──
   return (
-    <div className="animate-slide-up" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      
-      <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-        <h1 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-display)', fontWeight: 800, marginBottom: '0.5rem' }}>
-          AI <span className="glow-text-gradient">Resume Analyzer</span> & ATS Optimizer
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', maxWidth: '700px', margin: '0 auto' }}>
-          Instantly evaluate single resumes or process entire folders. AI-driven domain detection, ATS scoring, and professional analysis.
-        </p>
-        
-        {/* Upload Mode Toggles */}
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '2rem' }}>
-          <button className={`btn ${uploadMode === 'single' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setUploadMode('single')} disabled={isBatchProcessing}>
-            📄 Single Resume
-          </button>
-          <button className={`btn ${uploadMode === 'batch' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setUploadMode('batch')} disabled={isBatchProcessing}>
-            📁 Batch / Folder Upload
-          </button>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="flex-col gap-8"
+    >
+      {/* Header */}
+      <div className="text-center">
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{ fontSize: '2.25rem', marginBottom: 'var(--space-3)' }}
+        >
+          AI <span className="glow-text-gradient">Resume Analyzer</span>
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', maxWidth: '600px', margin: '0 auto' }}
+        >
+          Upload your resume for instant ATS scoring, AI-driven insights, and professional analysis.
+        </motion.p>
+
+        {/* Mode Toggle */}
+        <div className="flex-center gap-3" style={{ marginTop: 'var(--space-6)' }}>
+          <motion.button
+            className={`btn ${uploadMode === 'single' ? 'btn-primary' : 'btn-outline'}`}
+            onClick={() => setUploadMode('single')}
+            disabled={isBatchProcessing}
+            whileTap={{ scale: 0.97 }}
+          >
+            <FileText size={16} /> Single Resume
+          </motion.button>
+          <motion.button
+            className={`btn ${uploadMode === 'batch' ? 'btn-primary' : 'btn-outline'}`}
+            onClick={() => setUploadMode('batch')}
+            disabled={isBatchProcessing}
+            whileTap={{ scale: 0.97 }}
+          >
+            <FolderOpen size={16} /> Batch Upload
+          </motion.button>
         </div>
       </div>
 
-      {error && (
-        <div className="badge badge-danger animate-fade-in" style={{ display: 'block', padding: '0.75rem', fontSize: '0.9rem', textAlign: 'center' }}>
-          ⚠️ {error}
-        </div>
-      )}
+      {/* Error */}
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="badge badge-danger"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 'var(--space-2)',
+              padding: 'var(--space-3) var(--space-4)', width: '100%',
+              fontSize: '0.85rem', textTransform: 'none', letterSpacing: 0,
+            }}
+          >
+            <AlertTriangle size={16} style={{ flexShrink: 0 }} />
+            <span style={{ flex: 1 }}>{error}</span>
+            <button className="btn-ghost" onClick={() => setError('')} style={{ padding: '2px' }}>
+              <X size={14} />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
+      {/* Main Form */}
       <form onSubmit={(e) => { e.preventDefault(); uploadMode === 'single' ? triggerSingleAnalysis() : triggerBatchAnalysis(); }} className="grid-2">
-        
-        {/* Left Side: Upload Area */}
-        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-display)' }}>1. Add Resumes</h3>
+        {/* Left: Upload */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.15 }}
+          className="glass-card glass-card-static flex-col gap-5"
+        >
+          <div className="flex-between">
+            <h3 style={{ fontSize: '1.15rem' }}>
+              <span className="flex-center gap-2">
+                <Upload size={18} style={{ color: 'var(--color-primary)' }} />
+                Upload Resume
+              </span>
+            </h3>
             {uploadMode === 'single' && (
-              <button type="button" className="btn btn-secondary" onClick={loadPreset} style={{ fontSize: '0.8rem', padding: '0.25rem 0.75rem' }}>
-                🚀 Load Sample
+              <button type="button" className="btn btn-outline btn-sm" onClick={loadPreset}>
+                <Sparkles size={13} /> Sample
               </button>
             )}
           </div>
 
-          <div
+          {/* Drop Zone */}
+          <motion.div
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             onClick={() => uploadMode === 'single' ? fileInputRef.current.click() : batchInputRef.current.click()}
+            whileHover={{ borderColor: 'var(--color-primary)', background: 'rgba(59, 130, 246, 0.04)' }}
             style={{
-              border: isDragging ? '2px dashed var(--color-primary)' : '2px dashed var(--border-color)',
-              background: isDragging ? 'rgba(59, 130, 246, 0.05)' : 'rgba(255, 255, 255, 0.01)',
+              border: `2px dashed ${isDragging ? 'var(--color-primary)' : 'var(--border-color)'}`,
+              background: isDragging ? 'rgba(59, 130, 246, 0.06)' : 'transparent',
               borderRadius: 'var(--radius-md)',
-              padding: '2.5rem 1.5rem',
-              textAlign: 'center',
-              cursor: 'pointer',
-              transition: 'all var(--transition-fast)',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem'
+              padding: 'var(--space-10) var(--space-6)',
+              textAlign: 'center', cursor: 'pointer',
+              transition: 'all 0.2s',
             }}
           >
             {uploadMode === 'single' ? (
               <>
-                <input type="file" ref={fileInputRef} onChange={(e) => { if(e.target.files[0] && isFileValid(e.target.files[0])) { setFile(e.target.files[0]); setResumeText(''); } }} accept=".pdf,.docx,.doc,.txt" style={{ display: 'none' }} />
-                <span style={{ fontSize: '2.5rem' }}>📄</span>
+                <input type="file" ref={fileInputRef} onChange={(e) => { if (e.target.files[0] && isFileValid(e.target.files[0])) { setFile(e.target.files[0]); setResumeText(''); } }} accept=".pdf,.docx,.doc,.txt" style={{ display: 'none' }} />
                 {file ? (
-                  <div>
-                    <p style={{ fontWeight: 600 }}>{file.name}</p>
-                    <button type="button" className="btn btn-secondary" onClick={(e) => { e.stopPropagation(); setFile(null); }} style={{ fontSize: '0.75rem', padding: '0.15rem 0.5rem', marginTop: '0.5rem' }}>Remove</button>
+                  <div className="flex-col gap-2" style={{ alignItems: 'center' }}>
+                    <FileText size={36} style={{ color: 'var(--color-success)' }} />
+                    <p style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{file.name}</p>
+                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{(file.size / 1024).toFixed(1)} KB</span>
+                    <button
+                      type="button" className="btn btn-outline btn-sm"
+                      onClick={(e) => { e.stopPropagation(); setFile(null); }}
+                      style={{ marginTop: 'var(--space-2)' }}
+                    >
+                      <Trash2 size={13} /> Remove
+                    </button>
                   </div>
                 ) : (
-                  <div><p style={{ fontWeight: 600 }}>Drag & Drop file, or click to browse</p><p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Supports PDF, DOCX, TXT</p></div>
+                  <div className="flex-col gap-2" style={{ alignItems: 'center' }}>
+                    <Upload size={36} style={{ color: 'var(--text-muted)' }} />
+                    <p style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Drag & drop file, or click to browse</p>
+                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Supports PDF, DOCX, DOC, TXT (max 5MB)</span>
+                  </div>
                 )}
               </>
             ) : (
@@ -302,104 +376,172 @@ export default function ResumeAnalyzer({ apiKey, onAnalysisComplete }) {
                   const newFiles = Array.from(e.target.files).filter(isFileValid).map(f => ({ file: f, status: 'Pending', data: null, errorMsg: '' }));
                   setBatchQueue(prev => [...prev, ...newFiles]);
                 }} style={{ display: 'none' }} />
-                
-                <span style={{ fontSize: '2.5rem' }}>📁</span>
-                <div>
-                  <p style={{ fontWeight: 600 }}>Drag & Drop multiple files or folders</p>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>We will auto-filter valid resume documents.</p>
-                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
-                    <button type="button" className="btn btn-secondary" onClick={(e) => { e.stopPropagation(); batchInputRef.current.click(); }} style={{ fontSize: '0.8rem' }}>Add Files</button>
-                    <button type="button" className="btn btn-secondary" onClick={(e) => { e.stopPropagation(); folderInputRef.current.click(); }} style={{ fontSize: '0.8rem' }}>Add Folder</button>
+                <div className="flex-col gap-3" style={{ alignItems: 'center' }}>
+                  <FolderOpen size={36} style={{ color: 'var(--text-muted)' }} />
+                  <p style={{ fontWeight: 600 }}>Drag & drop multiple files or folders</p>
+                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Auto-filters valid resume documents</span>
+                  <div className="flex-center gap-3" style={{ marginTop: 'var(--space-2)' }}>
+                    <button type="button" className="btn btn-outline btn-sm" onClick={(e) => { e.stopPropagation(); batchInputRef.current.click(); }}>
+                      <FileText size={13} /> Add Files
+                    </button>
+                    <button type="button" className="btn btn-outline btn-sm" onClick={(e) => { e.stopPropagation(); folderInputRef.current.click(); }}>
+                      <FolderOpen size={13} /> Add Folder
+                    </button>
                   </div>
                 </div>
               </>
             )}
-          </div>
+          </motion.div>
 
+          {/* Paste Area (single mode) */}
           {uploadMode === 'single' && (
             <>
-              <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>— OR —</div>
+              <div className="flex-center gap-3">
+                <div style={{ flex: 1, height: '1px', background: 'var(--border-color)' }} />
+                <span className="text-xs" style={{ color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>or paste text</span>
+                <div style={{ flex: 1, height: '1px', background: 'var(--border-color)' }} />
+              </div>
               <div className="form-group" style={{ margin: 0 }}>
-                <label className="form-label">Paste Resume Text Plainly</label>
-                <textarea className="form-textarea" placeholder="Paste your resume contents here..." rows={6} value={resumeText} onChange={(e) => { setResumeText(e.target.value); if (file) setFile(null); }} />
+                <div className="flex-between mb-2">
+                  <label className="form-label" style={{ margin: 0 }}>
+                    <Clipboard size={14} style={{ display: 'inline', verticalAlign: '-2px', marginRight: '6px' }} />
+                    Resume Text
+                  </label>
+                  {resumeText && (
+                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{resumeText.length} chars</span>
+                  )}
+                </div>
+                <textarea
+                  className="form-textarea"
+                  placeholder="Paste your resume contents here..."
+                  rows={5}
+                  value={resumeText}
+                  onChange={(e) => { setResumeText(e.target.value); if (file) setFile(null); }}
+                />
               </div>
             </>
           )}
+        </motion.div>
 
-        </div>
-
-        {/* Right Side: JD & Submit */}
-        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-display)' }}>2. Target Job Description (Optional for General Analysis)</h3>
+        {/* Right: JD & Submit */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2 }}
+          className="glass-card glass-card-static flex-col gap-5"
+        >
+          <h3 style={{ fontSize: '1.15rem' }}>
+            <span className="flex-center gap-2">
+              <Briefcase size={18} style={{ color: 'var(--color-secondary)' }} />
+              Job Description
+            </span>
+          </h3>
+          <p className="text-sm" style={{ color: 'var(--text-muted)', marginTop: '-0.5rem' }}>
+            Optional — paste a JD for targeted ATS match scoring
+          </p>
           <div className="form-group" style={{ flex: 1, display: 'flex', flexDirection: 'column', margin: 0 }}>
-            <textarea className="form-textarea" placeholder="Paste the job advertisement to get an ATS Match Score. Leave blank for a general professional audit." value={jobDescription} onChange={(e) => setJobDescription(e.target.value)} style={{ flex: 1, minHeight: '200px', resize: 'vertical' }} />
+            <textarea
+              className="form-textarea"
+              placeholder="Paste the job description for targeted ATS analysis. Leave blank for a general audit."
+              value={jobDescription}
+              onChange={(e) => setJobDescription(e.target.value)}
+              style={{ flex: 1, minHeight: '200px' }}
+            />
           </div>
-          
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '1rem' }} disabled={isBatchProcessing}>
-            {isBatchProcessing ? '⏳ Processing Batch...' : '⚡ Run AI Audit'}
-          </button>
-        </div>
+
+          <motion.button
+            type="submit"
+            className="btn btn-primary w-full"
+            style={{ padding: '1rem' }}
+            disabled={isBatchProcessing}
+            whileTap={{ scale: 0.98 }}
+          >
+            {isBatchProcessing ? (
+              <span className="flex-center gap-2"><Loader size={16} style={{ animation: 'spin 1s linear infinite' }} /> Processing Batch...</span>
+            ) : (
+              <span className="flex-center gap-2"><Zap size={16} /> Run AI Analysis <ArrowRight size={16} /></span>
+            )}
+          </motion.button>
+        </motion.div>
       </form>
 
-      {/* Batch Processing Dashboard */}
-      {uploadMode === 'batch' && batchQueue.length > 0 && (
-        <div className="glass-panel animate-fade-in" style={{ padding: '2rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.5rem', margin: 0 }}>Batch Results ({batchQueue.filter(f => f.status === 'Completed').length} / {batchQueue.length})</h2>
-            <button className="btn btn-outline" onClick={() => setBatchQueue([])} disabled={isBatchProcessing} style={{ fontSize: '0.8rem' }}>Clear Queue</button>
-          </div>
-          
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-muted)' }}>
-                  <th style={{ padding: '1rem', fontWeight: 500 }}>File Name</th>
-                  <th style={{ padding: '1rem', fontWeight: 500 }}>Status</th>
-                  <th style={{ padding: '1rem', fontWeight: 500 }}>Detected Profession</th>
-                  <th style={{ padding: '1rem', fontWeight: 500 }}>Match Score</th>
-                  <th style={{ padding: '1rem', fontWeight: 500 }}>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {batchQueue.map((item, idx) => (
-                  <tr key={idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'background 0.2s' }}>
-                    <td style={{ padding: '1rem', fontWeight: 500 }}>{item.file.name}</td>
-                    <td style={{ padding: '1rem' }}>
-                      <span style={{
-                        padding: '0.2rem 0.6rem', borderRadius: '4px', fontSize: '0.8rem',
-                        background: item.status === 'Pending' ? 'rgba(255,255,255,0.1)' :
-                                    item.status === 'Analyzing' ? 'rgba(59, 130, 246, 0.2)' :
-                                    item.status === 'Completed' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-                        color: item.status === 'Analyzing' ? '#60a5fa' :
-                               item.status === 'Completed' ? '#4ade80' :
-                               item.status === 'Failed' ? '#f87171' : 'white'
-                      }}>{item.status}</span>
-                      {item.errorMsg && <div style={{ fontSize: '0.75rem', color: '#f87171', marginTop: '0.25rem', maxWidth: '200px' }}>{item.errorMsg}</div>}
-                    </td>
-                    <td style={{ padding: '1rem', color: 'var(--color-secondary)' }}>
-                      {item.data?.extractedProfile?.profession || item.data?.detectedDomain || '-'}
-                    </td>
-                    <td style={{ padding: '1rem' }}>
-                      {item.data?.atsScore !== undefined ? (
-                        <span className={`score-badge ${item.data.atsScore >= 75 ? 'score-high' : item.data.atsScore >= 50 ? 'score-medium' : 'score-low'}`} style={{ padding: '0.2rem 0.5rem', borderRadius: '4px', fontWeight: 'bold' }}>
-                          {item.data.atsScore}%
-                        </span>
-                      ) : '-'}
-                    </td>
-                    <td style={{ padding: '1rem' }}>
-                      {item.data && (
-                        <button className="btn btn-primary" style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }} onClick={() => onAnalysisComplete(item.data, jobDescription)}>
-                          View Report
-                        </button>
-                      )}
-                    </td>
+      {/* Batch Results */}
+      <AnimatePresence>
+        {uploadMode === 'batch' && batchQueue.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="glass-panel"
+            style={{ padding: 'var(--space-8)' }}
+          >
+            <div className="flex-between mb-6">
+              <h2 style={{ fontSize: '1.35rem', margin: 0 }}>
+                Batch Results ({batchQueue.filter(f => f.status === 'Completed').length} / {batchQueue.length})
+              </h2>
+              <button className="btn btn-outline btn-sm" onClick={() => setBatchQueue([])} disabled={isBatchProcessing}>
+                <Trash2 size={13} /> Clear
+              </button>
+            </div>
+
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
+                    {['File Name', 'Status', 'Profession', 'Score', 'Action'].map(h => (
+                      <th key={h} style={{ padding: 'var(--space-4)', fontWeight: 600, fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-    </div>
+                </thead>
+                <tbody>
+                  {batchQueue.map((item, idx) => (
+                    <motion.tr
+                      key={idx}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: idx * 0.05 }}
+                      style={{ borderBottom: '1px solid var(--border-color)' }}
+                    >
+                      <td style={{ padding: 'var(--space-4)', fontWeight: 600, fontSize: '0.9rem' }}>
+                        <span className="flex-center gap-2">
+                          <FileText size={14} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
+                          {item.file.name}
+                        </span>
+                      </td>
+                      <td style={{ padding: 'var(--space-4)' }}>
+                        <span className={`badge ${item.status === 'Completed' ? 'badge-success' : item.status === 'Failed' ? 'badge-danger' : item.status === 'Analyzing' ? 'badge-info' : 'badge-accent'}`}>
+                          {item.status === 'Analyzing' && <Loader size={12} style={{ animation: 'spin 1s linear infinite' }} />}
+                          {item.status === 'Completed' && <CheckCircle size={12} />}
+                          {item.status === 'Failed' && <XCircle size={12} />}
+                          {item.status}
+                        </span>
+                        {item.errorMsg && <div className="text-xs" style={{ color: 'var(--color-danger)', marginTop: '4px', maxWidth: '200px' }}>{item.errorMsg}</div>}
+                      </td>
+                      <td style={{ padding: 'var(--space-4)', color: 'var(--color-secondary)', fontSize: '0.9rem' }}>
+                        {item.data?.extractedProfile?.profession || item.data?.detectedDomain || '—'}
+                      </td>
+                      <td style={{ padding: 'var(--space-4)' }}>
+                        {item.data?.atsScore !== undefined ? (
+                          <span className={`badge ${item.data.atsScore >= 75 ? 'badge-success' : item.data.atsScore >= 50 ? 'badge-warning' : 'badge-danger'}`}>
+                            {item.data.atsScore}%
+                          </span>
+                        ) : '—'}
+                      </td>
+                      <td style={{ padding: 'var(--space-4)' }}>
+                        {item.data && (
+                          <button className="btn btn-primary btn-sm" onClick={() => onAnalysisComplete(item.data, jobDescription)}>
+                            <BarChart3 size={13} /> View
+                          </button>
+                        )}
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
