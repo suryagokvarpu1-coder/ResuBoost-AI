@@ -108,55 +108,96 @@ export async function generateCareerRoadmap(userProfile, targetRole, clientApiKe
   try {
     const model = getGeminiModel(clientApiKey);
 
+    const domain = userProfile.domain || 'General';
+    
+    // Dynamic domain context to enforce non-software paradigms where appropriate
+    let domainContext = "";
+    const lowerDomain = domain.toLowerCase();
+    const lowerProf = (userProfile.profession || '').toLowerCase();
+    const lowerTarget = (targetRole || '').toLowerCase();
+    const combinedSignals = lowerDomain + ' ' + lowerProf + ' ' + lowerTarget;
+
+    if (combinedSignals.includes('medicine') || combinedSignals.includes('health') || combinedSignals.includes('doctor') || combinedSignals.includes('nurse')) {
+      domainContext = "DOMAIN SPECIFIC RULE (MEDICINE/HEALTHCARE): Focus heavily on Clinical Rotations, Residency, USMLE/NEET-PG/Board Exams, Medical Research, Patient Care, and Fellowships. DO NOT mention GitHub, coding projects, or web development.";
+    } else if (combinedSignals.includes('architec') || combinedSignals.includes('civil') || combinedSignals.includes('construction')) {
+      domainContext = "DOMAIN SPECIFIC RULE (ARCHITECTURE/CIVIL): Focus heavily on AutoCAD, Revit, SketchUp, Physical Modeling, Sustainable Design, Site Management, and Portfolio Design. DO NOT mention software coding.";
+    } else if (combinedSignals.includes('law') || combinedSignals.includes('legal') || combinedSignals.includes('advocate')) {
+      domainContext = "DOMAIN SPECIFIC RULE (LAW): Focus on Moot Courts, Drafting Contracts, Legal Research, Bar Exams, Clerkships, and Corporate/Criminal Litigation. DO NOT mention tech projects.";
+    } else if (combinedSignals.includes('art') || combinedSignals.includes('design') || combinedSignals.includes('ui/ux') || combinedSignals.includes('creative')) {
+      domainContext = "DOMAIN SPECIFIC RULE (DESIGN/ARTS): Focus on Creative Portfolios, Behance/Dribbble, UI/UX tools (Figma, Adobe Creative Suite), Concept Art, and Exhibitions.";
+    } else if (combinedSignals.includes('finance') || combinedSignals.includes('business') || combinedSignals.includes('manage') || combinedSignals.includes('hr') || combinedSignals.includes('marketing')) {
+      domainContext = "DOMAIN SPECIFIC RULE (BUSINESS/FINANCE/HR/MARKETING): Focus on Financial Modeling, Certifications (CFA, CPA, PMP, SHRM), Case Studies, Internships at Corporate Firms, SEO Audits, and Market Research.";
+    } else {
+      domainContext = "DOMAIN SPECIFIC RULE: Tailor all advice STRICTLY to the real-world standards of the detected profession. Do not assume a software engineering path unless explicitly requested.";
+    }
+
     const prompt = `
 You are an expert career roadmap architect and life coach for professionals in India and globally.
 
 User Current State:
 - Profession: ${userProfile.profession || 'Not specified'}
 - Education: ${userProfile.education || 'Not specified'}
-- Domain: ${userProfile.domain || 'General'}
+- Domain: ${domain}
 - Current Skills: ${(userProfile.skills || []).join(', ') || 'None listed'}
 - Experience: ${userProfile.experience || '0 years'}
 - Target Role: ${targetRole || userProfile.goal || 'Senior professional in their field'}
 
+${domainContext}
+
 IMPORTANT VALIDATION INSTRUCTION:
-Check if the "Target Role" is a valid, meaningful, and career-related query (a job title, skill, domain, or learning path). If the input contains gibberish, random letters, spam, a non-career related phrase (e.g., "how to cook", "asdfg"), or is inappropriate, you MUST reject the request by setting "isValidRequest" to false and providing the "validationMessage". Do not generate the rest of the roadmap if it is invalid.
+You are a strict gatekeeper. Analyze the "Target Role". If it is NOT a valid, authentic career, skill, technology, or professional domain, you MUST reject it.
+Examples of INVALID inputs that you MUST reject:
+- "asdfg" -> Reject
+- "how to cook pasta" -> Reject
+- "make me laugh" -> Reject
+- "random text here" -> Reject
+- "testing 123" -> Reject
+- "I want to be a superhero" -> Reject
+- "dummy" -> Reject
+- "hello world" -> Reject
+If invalid, return exactly this JSON: { "isValidRequest": false, "validationMessage": "Please enter a valid career goal, skill, technology, domain, or learning roadmap request." } and DO NOT include any other fields.
+
+CRITICAL QUALITY INSTRUCTION (BAN ON GENERIC OUTPUTS):
+1. You MUST NEVER use generic, lazy, or repetitive phrases like "Do more projects", "Learn more skills", "Complete 1-2 projects", "Build your portfolio", or "Get certified".
+2. You MUST name the EXACT, specific skill, certification, or real-world action required for this SPECIFIC profession (e.g., instead of "Get a certification", say "Pass the USMLE Step 1" or "Obtain the PMP Certification").
+3. Milestones must be highly realistic industry-standard deliverables (e.g., "Drafted a 10-page commercial lease mock-up", "Completed 500 hours of clinical rotation", "Delivered a comprehensive SEO audit").
+4. If the domain is non-technical (e.g., Medicine, Law, HR, Marketing), ABSOLUTELY DO NOT suggest GitHub, programming, or coding projects.
 
 Generate a detailed, realistic, and actionable career roadmap. Return ONLY valid JSON:
 {
   "isValidRequest": <boolean: true if Target Role is valid, false otherwise>,
-  "validationMessage": "<If isValidRequest is false, strictly output: 'Please enter a valid career goal, skill, domain, or learning path.'>",
+  "validationMessage": "<If isValidRequest is false, strictly output: 'Please enter a valid career goal, skill, technology, domain, or learning roadmap request.'>",
   "targetRole": "<final target role title>",
   "totalDuration": "<estimated total time e.g., 18 months>",
-  "overview": "<2-sentence roadmap summary>",
+  "overview": "<2-sentence highly specific, non-generic roadmap summary>",
   "phases": [
     {
       "phase": 1,
-      "title": "<phase title e.g., 'Foundation Building'>",
+      "title": "<phase title e.g., 'Core Competency Building'>",
       "duration": "<e.g., 3 months>",
       "goal": "<specific outcome of this phase>",
       "tasks": [
         {
-          "task": "<specific task>",
-          "type": "<Learn|Build|Apply|Network|Certify>",
-          "resource": "<specific course/book/platform>",
-          "timeEstimate": "<e.g., 2 weeks>"
+          "task": "<highly specific action e.g., 'Draft a 15-page moot court memo' or 'Master Revit BIM modeling'>",
+          "type": "<Learn|Build|Clinical|Research|Certify|Network|Audit|Draft|Fieldwork|Practice>",
+          "resource": "<specific book, platform, institution, or tool e.g., 'LexisNexis', 'Local Hospital', 'AutoCAD'>",
+          "timeEstimate": "<e.g., 4 weeks>"
         }
       ],
-      "milestone": "<measurable deliverable at end of phase>",
+      "milestone": "<specific measurable deliverable e.g., 'First sustainable building floorplan completed'>",
       "checkpointQuestion": "<question to self-assess readiness to move forward>"
     }
   ],
   "keyMilestones": [
-    { "month": <number>, "achievement": "<specific measurable achievement>" }
+    { "month": <number>, "achievement": "<highly specific measurable achievement>" }
   ],
   "salaryProgression": [
     { "stage": "<stage name>", "expectedSalary": "<salary range>", "timeframe": "<when>" }
   ],
-  "criticalSuccessFactors": ["<factor 1>", "<factor 2>", "<factor 3>"],
-  "commonPitfalls": ["<pitfall to avoid>", "<pitfall 2>", "<pitfall 3>"],
-  "networkingStrategy": "<specific networking advice for this domain>",
-  "portfolioRequirements": "<what portfolio/projects to build>",
+  "criticalSuccessFactors": ["<highly specific factor 1>", "<highly specific factor 2>", "<highly specific factor 3>"],
+  "commonPitfalls": ["<specific pitfall to avoid>", "<pitfall 2>", "<pitfall 3>"],
+  "networkingStrategy": "<specific networking advice for this precise domain>",
+  "portfolioRequirements": "<exact description of what a portfolio/record looks like in this domain>",
   "alternativePaths": [
     { "path": "<alternative role>", "reason": "<why it's a good alternative>" }
   ]

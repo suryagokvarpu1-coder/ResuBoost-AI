@@ -78,15 +78,20 @@ router.post('/roadmap', async (req, res) => {
     if (!userProfile) return res.status(400).json({ error: 'User profile is required.' });
 
     const trimmedTarget = targetRole ? targetRole.trim() : '';
-    if (!trimmedTarget || trimmedTarget.length < 2) {
-      return res.status(400).json({ error: 'Please enter a valid career goal, skill, domain, or learning path.' });
-    }
+    
+    const isGibberish = (text) => {
+      const cleaned = text.toLowerCase();
+      if (cleaned.length < 2) return true;
+      if (/(.)\1{3,}/.test(cleaned)) return true;
+      if (cleaned.length > 15 && !cleaned.includes(' ')) return true;
+      const testWords = ['test', 'testing', 'asdf', 'qwer', 'zxcv', 'fake', 'dummy', 'rubbish', 'garbage', 'blah'];
+      if (testWords.some(w => cleaned.includes(w))) return true;
+      const alphanumericCount = (cleaned.match(/[a-z0-9]/g) || []).length;
+      if (alphanumericCount < cleaned.length * 0.4) return true;
+      return false;
+    };
 
-    // Pre-validation heuristics: Reject obvious spam/gibberish
-    if (/(.)\1{4,}/.test(trimmedTarget)) {
-      return res.status(400).json({ error: 'Please enter a valid career goal, skill, domain, or learning path.' });
-    }
-    if (!/[a-zA-Z0-9]/.test(trimmedTarget)) {
+    if (isGibberish(trimmedTarget)) {
       return res.status(400).json({ error: 'Please enter a valid career goal, skill, domain, or learning path.' });
     }
 
