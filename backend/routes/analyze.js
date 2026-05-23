@@ -4,6 +4,7 @@ import { extractTextFromBuffer } from '../utils/parser.js';
 import { analyzeResumeLocally } from '../utils/analyzer.js';
 import { analyzeResumeWithGemini, optimizeBulletPointWithGemini } from '../services/geminiService.js';
 import { mapToCanonicalDomain } from '../utils/domainMapper.js';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const router = express.Router();
 
@@ -278,6 +279,7 @@ router.post('/analyze', upload.single('resume'), async (req, res) => {
         return res.json(mergedResult);
       } catch (aiError) {
         console.warn('AI analysis failed, falling back to local analysis:', aiError.message);
+        req.aiFallbackError = aiError.message;
       }
     }
 
@@ -322,7 +324,7 @@ router.post('/analyze', upload.single('resume'), async (req, res) => {
         careerInterests: []
       },
       isAI: false,
-      warning: 'Using offline analyzer. Enter a Gemini API Key in Settings to get full AI suitability checks and profile scans.'
+      warning: req.aiFallbackError ? `AI analysis failed (${req.aiFallbackError}). Falling back to offline analyzer. Check your API key in Settings.` : 'Using offline analyzer. Enter a Gemini API Key in Settings to get full AI suitability checks and profile scans.'
     });
 
   } catch (error) {
@@ -363,6 +365,23 @@ router.post('/optimize-bullet', async (req, res) => {
   } catch (error) {
     console.error('Bullet Optimizer Endpoint Error:', error);
     res.status(500).json({ error: 'Failed to optimize bullet point.', details: error.message });
+  }
+});
+
+// GET /api/verify-key
+router.get('/verify-key', async (req, res) => {
+  try {
+    const clientApiKey = req.headers['x-api-key'] || '';
+    if (!clientApiKey) {
+      return res.status(400).json({ error: 'API key is required.' });
+    }
+    const genAI = new GoogleGenerativeAI(clientApiKey);
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    await model.generateContent("Hello");
+    res.json({ valid: true });
+  } catch (error) {
+    console.error('API Key Verification Error:', error);
+    res.status(401).json({ error: 'Invalid API Key.', details: error.message });
   }
 });
 

@@ -56,8 +56,9 @@ export default function App() {
             document.documentElement.setAttribute('data-theme', dbData.preferences.theme);
           }
           
-          // Sync API Key automatically
-          if (dbData.apiKey !== undefined) {
+          // Sync API Key automatically if it's set in the DB
+          // Check for string type to avoid syncing `undefined` or null maliciously
+          if (typeof dbData.apiKey === 'string') {
             localStorage.setItem('gemini_api_key', dbData.apiKey);
             setApiKey(dbData.apiKey);
           }
@@ -145,6 +146,15 @@ export default function App() {
   const handleReset = () => {
     setAnalysisResult(null);
     setActiveTab('analyzer');
+  };
+
+  const handleApiKeyUpdate = (newKey) => {
+    setApiKey(newKey);
+    // If the user updates their API key, clear old offline analysis results
+    // so they are prompted to run a fresh scan with the AI key.
+    if (analysisResult && !analysisResult.isAI) {
+      setAnalysisResult(null);
+    }
   };
 
   if (splashLoading || authLoading) {
@@ -524,7 +534,7 @@ export default function App() {
             key={user.uid}
             user={user} 
             apiKey={apiKey} 
-            setApiKey={setApiKey}
+            setApiKey={handleApiKeyUpdate}
             onProfileUpdate={triggerUserRefresh}
           />
         )}

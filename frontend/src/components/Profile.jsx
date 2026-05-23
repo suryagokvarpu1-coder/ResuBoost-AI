@@ -30,6 +30,7 @@ export default function Profile({ user, apiKey, setApiKey, onProfileUpdate }) {
   const [showKey, setShowKey] = useState(false);
   const [keyInput, setKeyInput] = useState(apiKey || '');
   const [apiSaved, setApiSaved] = useState(false);
+  const [keyStatus, setKeyStatus] = useState('none'); // 'none', 'checking', 'connected', 'invalid'
 
   // App Settings States
   const [theme, setTheme] = useState(localStorage.getItem('resuboost_theme') || 'dark');
@@ -39,6 +40,34 @@ export default function Profile({ user, apiKey, setApiKey, onProfileUpdate }) {
 
   // Cache state
   const [cacheCleared, setCacheCleared] = useState(false);
+
+  // Sync keyInput when apiKey prop changes from parent (e.g. on load)
+  import { useEffect } from 'react';
+  useEffect(() => {
+    setKeyInput(apiKey || '');
+  }, [apiKey]);
+
+  // Check live API key status
+  useEffect(() => {
+    if (!apiKey) {
+      setKeyStatus('none');
+      return;
+    }
+    let isMounted = true;
+    const verifyLiveKey = async () => {
+      setKeyStatus('checking');
+      try {
+        const res = await fetch('/api/verify-key', { headers: { 'x-api-key': apiKey } });
+        if (isMounted) {
+          setKeyStatus(res.ok ? 'connected' : 'invalid');
+        }
+      } catch (e) {
+        if (isMounted) setKeyStatus('invalid');
+      }
+    };
+    verifyLiveKey();
+    return () => { isMounted = false; };
+  }, [apiKey]);
 
   // Fallback to name extracted from email if displayName is not configured
   const getDisplayName = () => {
@@ -217,7 +246,24 @@ export default function Profile({ user, apiKey, setApiKey, onProfileUpdate }) {
   const handleSaveApiKey = async (e) => {
     e.preventDefault();
     setApiSaved(false);
+    setProfileError('');
+    if (!keyInput.trim()) {
+      setProfileError('Please enter a valid API Key.');
+      return;
+    }
     try {
+      // 1. Verify Key First
+      const res = await fetch('/api/verify-key', {
+        headers: { 'x-api-key': keyInput }
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        setProfileError(errorData.error || 'Invalid API Key.');
+        return;
+      }
+
+      // 2. Save Key if Valid
       setApiKey(keyInput);
       localStorage.setItem('gemini_api_key', keyInput);
       
@@ -231,12 +277,13 @@ export default function Profile({ user, apiKey, setApiKey, onProfileUpdate }) {
       setTimeout(() => setApiSaved(false), 3000);
     } catch (err) {
       console.error("Save API Key failed:", err);
+      setProfileError('Network error during verification.');
     }
   };
 
   const handleClearApiKey = async () => {
     setKeyInput('');
-    setApiKey('');
+    setApiKey(''); // Triggers App.jsx handleApiKeyUpdate
     localStorage.removeItem('gemini_api_key');
     
     if (auth.currentUser) {
@@ -670,6 +717,32 @@ export default function Profile({ user, apiKey, setApiKey, onProfileUpdate }) {
                 Manage your system API key to orchestrate resume insights, parsing rubrics, and bullet audits.
               </p>
 
+              {/* Status Indicator */}
+              <div style={{
+                marginBottom: '2rem',
+                padding: '1rem',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                background: keyStatus === 'connected' ? 'rgba(34, 197, 94, 0.1)' : keyStatus === 'invalid' ? 'rgba(239, 68, 68, 0.1)' : keyStatus === 'checking' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                border: `1px solid ${keyStatus === 'connected' ? 'rgba(34, 197, 94, 0.3)' : keyStatus === 'invalid' ? 'rgba(239, 68, 68, 0.3)' : keyStatus === 'checking' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`
+              }}>
+                <div style={{
+                  width: '12px', height: '12px', borderRadius: '50%',
+                  background: keyStatus === 'connected' ? '#22c55e' : keyStatus === 'invalid' ? '#ef4444' : keyStatus === 'checking' ? '#3b82f6' : '#6b7280',
+                  boxShadow: `0 0 10px ${keyStatus === 'connected' ? '#22c55e' : keyStatus === 'invalid' ? '#ef4444' : keyStatus === 'checking' ? '#3b82f6' : 'transparent'}`
+                }} />
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <strong style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>
+                    {keyStatus === 'connected' ? 'API Key Active & Valid' : keyStatus === 'invalid' ? 'API Key Invalid or Expired' : keyStatus === 'checking' ? 'Verifying Key Status...' : 'No API Key Configured'}
+                  </strong>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                    {keyStatus === 'connected' ? 'System is fully running in AI-powered mode.' : 'System is currently running in offline core mode.'}
+                  </span>
+                </div>
+              </div>
+
               <form onSubmit={handleSaveApiKey}>
                 <div className="form-group">
                   <label className="form-label" htmlFor="api-key-profile">Gemini API Key</label>
@@ -707,7 +780,7 @@ export default function Profile({ user, apiKey, setApiKey, onProfileUpdate }) {
 
                 <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
                   <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>
-                    Save API Key
+                    Save & Verify API Key
                   </button>
                   {apiKey && (
                     <button type="button" className="btn btn-secondary" onClick={handleClearApiKey} style={{ flex: 0.3 }}>
@@ -717,16 +790,22 @@ export default function Profile({ user, apiKey, setApiKey, onProfileUpdate }) {
                 </div>
               </form>
 
+              {profileError && (
+                <div className="badge badge-danger animate-fade-in" style={{ display: 'block', width: '100%', textAlign: 'center', marginTop: '1.25rem', padding: '0.5rem' }}>
+                  ⚠ {profileError}
+                </div>
+              )}
+
               {apiSaved && (
                 <div className="badge badge-success animate-fade-in" style={{ display: 'block', width: '100%', textAlign: 'center', marginTop: '1.25rem', padding: '0.5rem' }}>
-                  ✓ Gemini configuration saved successfully!
+                  ✓ Gemini key verified and saved successfully!
                 </div>
               )}
 
               <div style={{ marginTop: '2.5rem', paddingTop: '2rem', borderTop: '1px solid var(--border-color)' }}>
                 <h3 style={{ fontSize: '1.2rem', marginBottom: '0.75rem', fontFamily: 'var(--font-display)' }}>ℹ️ Offline Parser Core Mode</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: '1.5' }}>
-                  In the absence of an API key configuration, ResuBoost executes offline rule-based evaluation. The scanner parses grammar checklists, checks structural formatting grids, and maps keyword intersections locally.
+                  If the API key is missing or fails validation, ResuBoost automatically executes offline rule-based evaluation. The scanner parses grammar checklists, checks structural formatting grids, and maps keyword intersections locally.
                 </p>
               </div>
             </div>
