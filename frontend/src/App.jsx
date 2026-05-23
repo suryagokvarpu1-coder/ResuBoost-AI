@@ -57,8 +57,7 @@ export default function App() {
           }
           
           // Sync API Key automatically if it's set in the DB
-          // Check for string type to avoid syncing `undefined` or null maliciously
-          if (typeof dbData.apiKey === 'string') {
+          if (dbData.apiKey && typeof dbData.apiKey === 'string' && dbData.apiKey.trim() !== '') {
             localStorage.setItem('gemini_api_key', dbData.apiKey);
             setApiKey(dbData.apiKey);
           }

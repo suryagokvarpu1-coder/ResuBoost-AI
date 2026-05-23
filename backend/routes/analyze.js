@@ -278,8 +278,9 @@ router.post('/analyze', upload.single('resume'), async (req, res) => {
 
         return res.json(mergedResult);
       } catch (aiError) {
-        console.warn('AI analysis failed, falling back to local analysis:', aiError.message);
-        req.aiFallbackError = aiError.message;
+        const errorMessage = aiError.message || (aiError.error && aiError.error.message) || JSON.stringify(aiError) || 'Unknown AI Error';
+        console.warn('AI analysis failed, falling back to local analysis:', errorMessage);
+        req.aiFallbackError = errorMessage;
       }
     }
 
@@ -321,7 +322,11 @@ router.post('/analyze', upload.single('resume'), async (req, res) => {
         experience: 'Not parsed (Offline)',
         certifications: [],
         projects: [],
-        careerInterests: []
+        achievements: [],
+        tools: [],
+        careerInterests: [],
+        recommendedDomains: [],
+        suitableJobRoles: []
       },
       isAI: false,
       warning: req.aiFallbackError ? `AI analysis failed (${req.aiFallbackError}). Falling back to offline analyzer. Check your API key in Settings.` : 'Using offline analyzer. Enter a Gemini API Key in Settings to get full AI suitability checks and profile scans.'
@@ -381,7 +386,8 @@ router.get('/verify-key', async (req, res) => {
     res.json({ valid: true });
   } catch (error) {
     console.error('API Key Verification Error:', error);
-    res.status(401).json({ error: 'Invalid API Key.', details: error.message });
+    const errorMessage = error.message || (error.error && error.error.message) || JSON.stringify(error) || 'Invalid API Key.';
+    res.status(401).json({ error: errorMessage, details: errorMessage });
   }
 });
 

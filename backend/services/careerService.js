@@ -49,6 +49,11 @@ User Profile:
 Domain Context:
 ${domainInfo.subDomains ? JSON.stringify(domainInfo.subDomains, null, 2) : 'Use your extensive global knowledge base to generate accurate guidance for this specific profession.'}
 
+CRITICAL RULES: 
+1. DO NOT suggest software engineering or IT paths to non-technical professionals unless explicitly requested.
+2. Provide REALISTIC, highly specific paths (e.g. "Civil Litigation Advocate" instead of "Lawyer").
+3. Give precise salary expectations based on the actual domain context.
+
 Generate a comprehensive career intelligence report. Return ONLY a valid JSON object:
 {
   "headline": "<1-line personalized career headline for this user>",

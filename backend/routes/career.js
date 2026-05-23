@@ -78,22 +78,6 @@ router.post('/roadmap', async (req, res) => {
     if (!userProfile) return res.status(400).json({ error: 'User profile is required.' });
 
     const trimmedTarget = targetRole ? targetRole.trim() : '';
-    
-    const isGibberish = (text) => {
-      const cleaned = text.toLowerCase();
-      if (cleaned.length < 2) return true;
-      if (/(.)\1{3,}/.test(cleaned)) return true;
-      if (cleaned.length > 15 && !cleaned.includes(' ')) return true;
-      const testWords = ['test', 'testing', 'asdf', 'qwer', 'zxcv', 'fake', 'dummy', 'rubbish', 'garbage', 'blah'];
-      if (testWords.some(w => cleaned.includes(w))) return true;
-      const alphanumericCount = (cleaned.match(/[a-z0-9]/g) || []).length;
-      if (alphanumericCount < cleaned.length * 0.4) return true;
-      return false;
-    };
-
-    if (isGibberish(trimmedTarget)) {
-      return res.status(400).json({ error: 'Please enter a valid career goal, skill, domain, or learning path.' });
-    }
 
     const clientApiKey = req.headers['x-api-key'] || '';
     const hasApiKey = !!(clientApiKey || process.env.GEMINI_API_KEY);

@@ -15,6 +15,11 @@ export default function Dashboard({ data, onReset }) {
   const skills = extractedProfile.skills || [];
   const projects = extractedProfile.projects || [];
   const certifications = extractedProfile.certifications || [];
+  const achievements = extractedProfile.achievements || [];
+  const tools = extractedProfile.tools || [];
+  const careerInterests = extractedProfile.careerInterests || [];
+  const recommendedDomains = extractedProfile.recommendedDomains || [];
+  const suitableJobRoles = extractedProfile.suitableJobRoles || [];
 
   const employabilityAudit = data.employabilityAudit || {};
   const readiness = employabilityAudit.readiness || {};
@@ -69,7 +74,11 @@ export default function Dashboard({ data, onReset }) {
         </div>
       </div>
 
-      {warning && (
+      {warning && warning.includes('AI analysis failed') ? (
+        <div className="badge badge-danger animate-fade-in" style={{ padding: '1rem', fontSize: '0.9rem', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid var(--color-danger)' }}>
+          🚨 {warning}
+        </div>
+      ) : warning && (
         <div className="badge badge-warning animate-fade-in" style={{ padding: '1rem', fontSize: '0.9rem' }}>
           ⚠️ {warning}
         </div>
@@ -127,21 +136,51 @@ export default function Dashboard({ data, onReset }) {
       <div className="grid-2">
         {/* Skills & Tech */}
         <div className="glass-card">
-          <h4 style={{ color: 'var(--color-primary)', marginBottom: '1rem' }}>🛠️ Identified Skills</h4>
+          <h4 style={{ color: 'var(--color-primary)', marginBottom: '1rem' }}>🛠️ Core Skills & Tools</h4>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-            {skills.length > 0 ? skills.map((s, i) => <span key={i} className="badge" style={{ background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)', color: '#60a5fa' }}>{s}</span>) : <span style={{color:'var(--text-muted)'}}>None detected</span>}
+            {skills.length > 0 ? skills.map((s, i) => <span key={i} className="badge" style={{ background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)', color: '#60a5fa' }}>{s}</span>) : null}
+            {tools.length > 0 ? tools.map((t, i) => <span key={`t-${i}`} className="badge" style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.3)', color: '#a78bfa' }}>{t}</span>) : null}
+            {skills.length === 0 && tools.length === 0 && <span style={{color:'var(--text-muted)'}}>None detected</span>}
           </div>
         </div>
 
-        {/* Education & Certs */}
+        {/* Education, Certs & Achievements */}
         <div className="glass-card">
-          <h4 style={{ color: 'var(--color-secondary)', marginBottom: '1rem' }}>🎓 Education & Certifications</h4>
+          <h4 style={{ color: 'var(--color-secondary)', marginBottom: '1rem' }}>🎓 Profile Highlights</h4>
           <p style={{ fontWeight: 600, marginBottom: '0.5rem' }}>{education}</p>
           {certifications.length > 0 && (
-            <ul style={{ paddingLeft: '1.2rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+            <ul style={{ paddingLeft: '1.2rem', color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: achievements.length > 0 ? '0.5rem' : '0' }}>
               {certifications.map((c, i) => <li key={i}>{c}</li>)}
             </ul>
           )}
+          {achievements.length > 0 && (
+            <ul style={{ paddingLeft: '1.2rem', color: 'var(--color-accent)', fontSize: '0.9rem' }}>
+              {achievements.map((a, i) => <li key={i}>{a}</li>)}
+            </ul>
+          )}
+        </div>
+
+        {/* Suitable Roles & Domains */}
+        <div className="glass-card" style={{ gridColumn: '1 / -1' }}>
+          <h4 style={{ color: 'var(--color-success)', marginBottom: '1rem' }}>💼 Career Path Opportunities</h4>
+          <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
+            {suitableJobRoles.length > 0 && (
+              <div>
+                <strong style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', display: 'block', marginBottom: '0.5rem' }}>Suitable Roles</strong>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  {suitableJobRoles.map((role, i) => <span key={i} className="badge badge-success">{role}</span>)}
+                </div>
+              </div>
+            )}
+            {recommendedDomains.length > 0 && (
+              <div>
+                <strong style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', display: 'block', marginBottom: '0.5rem' }}>Recommended Domains</strong>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  {recommendedDomains.map((dom, i) => <span key={i} className="badge badge-info">{dom}</span>)}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Strengths */}

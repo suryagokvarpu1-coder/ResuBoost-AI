@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { auth, db, storage } from '../firebase';
 import { updateProfile, sendPasswordResetEmail, sendEmailVerification, signOut } from 'firebase/auth';
 import { ref, update } from 'firebase/database';
@@ -41,8 +41,6 @@ export default function Profile({ user, apiKey, setApiKey, onProfileUpdate }) {
   // Cache state
   const [cacheCleared, setCacheCleared] = useState(false);
 
-  // Sync keyInput when apiKey prop changes from parent (e.g. on load)
-  import { useEffect } from 'react';
   useEffect(() => {
     setKeyInput(apiKey || '');
   }, [apiKey]);

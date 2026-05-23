@@ -79,6 +79,8 @@ Instructions:
    - Identify critical skill/certification gaps in high-demand areas for their specific profession.
    - Provide concrete tips to optimize their professional presence.
 
+CRITICAL RULE: DO NOT assume this is an IT/Software resume unless it explicitly contains software engineering skills. For fields like Medicine, Law, Arts, Business, Mechanical Engineering, etc., DO NOT suggest GitHub, coding, or programming skills. Tailor ALL feedback to their EXACT profession.
+
 Provide the evaluation in JSON format.
 Return ONLY a valid JSON object matching the following structure:
 {
@@ -118,7 +120,11 @@ Return ONLY a valid JSON object matching the following structure:
     "experience": "<Candidate's total experience e.g., '3 years', 'Fresher'>",
     "certifications": ["<cert1>", "<cert2>"],
     "projects": ["<project1>", "<project2>"],
-    "careerInterests": ["<interest1>", "<interest2>"]
+    "achievements": ["<achievement1>", "<achievement2>"],
+    "tools": ["<tool1>", "<tool2>"],
+    "careerInterests": ["<interest1>", "<interest2>"],
+    "recommendedDomains": ["<domain1>", "<domain2>"],
+    "suitableJobRoles": ["<role1>", "<role2>", "<role3>"]
   },
   "employabilityAudit": {
     "universityExposure": {
@@ -138,7 +144,7 @@ Return ONLY a valid JSON object matching the following structure:
         "feedback": "<critical feedback on why this is outdated/overused/good>",
         "suggestedReplacement": {
           "title": "<name of recommended replacement experience/project>",
-          "techStack": "<suggested tools, methodologies, or frameworks>",
+          "techStack": "<suggested tools, methodologies, or frameworks relevant to their field>",
           "description": "<sentence describing the details of this replacement experience>"
         }
       }
@@ -152,7 +158,7 @@ Return ONLY a valid JSON object matching the following structure:
     ],
     "portfolioTips": [
       {
-        "category": "<one of: LinkedIn Profile, Portfolio Website, Resume Presentation>",
+        "category": "<one of: LinkedIn Profile, Portfolio Website, Resume Presentation, Academic Record>",
         "tip": "<specific strategy to boost visibility in their industry>",
         "actionItem": "<immediate action to execute>"
       }
