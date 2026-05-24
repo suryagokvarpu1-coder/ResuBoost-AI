@@ -106,20 +106,20 @@ export default function Dashboard({ data, onReset }) {
 
   const getScoreColor = (score) => {
     const s = score ?? 0;
-    if (s >= 80) return '#10b981';
-    if (s >= 50) return '#f59e0b';
-    return '#f43f5e';
+    if (s >= 80) return '#ffffff';
+    if (s >= 50) return '#a3a3a3';
+    return '#525252';
   };
   const scoreColor = getScoreColor(atsScore);
 
   const getVerdictDetails = (verdict) => {
     const v = (verdict || '').toLowerCase();
     if (v.includes('highly suitable') || v === 'suitable') {
-      return { label: 'Suitable Match', color: '#10b981', bg: 'rgba(16, 185, 129, 0.08)', border: 'rgba(16, 185, 129, 0.25)', Icon: CheckCircle };
+      return { label: 'Suitable Match', color: '#ffffff', bg: 'rgba(255, 255, 255, 0.04)', border: 'rgba(255, 255, 255, 0.1)', Icon: CheckCircle };
     } else if (v.includes('partially') || v.includes('partial')) {
-      return { label: 'Partial Match', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.08)', border: 'rgba(245, 158, 11, 0.25)', Icon: AlertTriangle };
+      return { label: 'Partial Match', color: '#d4d4d8', bg: 'rgba(255, 255, 255, 0.02)', border: 'rgba(255, 255, 255, 0.06)', Icon: AlertTriangle };
     }
-    return { label: 'Low Match', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.08)', border: 'rgba(239, 68, 68, 0.25)', Icon: XCircle };
+    return { label: 'Low Match', color: '#737373', bg: 'rgba(255, 255, 255, 0.01)', border: 'rgba(255, 255, 255, 0.04)', Icon: XCircle };
   };
   const verdictDetails = suitability ? getVerdictDetails(suitability.verdict) : null;
 

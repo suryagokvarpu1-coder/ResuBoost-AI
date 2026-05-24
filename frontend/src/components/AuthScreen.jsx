@@ -71,7 +71,7 @@ export default function AuthScreen() {
       style={{ maxWidth: '440px', width: '100%', margin: '2rem auto', display: 'flex', flexDirection: 'column', gap: 'var(--space-6)', position: 'relative' }}
     >
       {/* Subtle backdrop glow behind the login modal */}
-      <div style={{ position: 'absolute', inset: -50, background: 'radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none', zIndex: 0 }} />
+      <div style={{ position: 'absolute', inset: -50, background: 'radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none', zIndex: 0 }} />
 
       {/* Header */}
       <div className="text-center" style={{ position: 'relative', zIndex: 1 }}>

@@ -182,9 +182,7 @@ export default function App() {
   if (splashLoading || authLoading) {
     return (
       <div className="app-container flex-center" style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
-        <div className="ambient-orb orb-blue" style={{ width: '600px', height: '600px', opacity: 0.6 }} />
-        <div className="ambient-orb orb-pink" style={{ width: '600px', height: '600px', opacity: 0.4 }} />
-        <div className="ambient-orb orb-accent" />
+        <div className="cinematic-spotlight" />
 
         <motion.div
           className="glass-card glass-card-static"
@@ -370,8 +368,6 @@ export default function App() {
   // ═══════════════════════════════════════════════
   return (
     <div className="app-container">
-      <div className="ambient-orb orb-blue" />
-      <div className="ambient-orb orb-pink" />
 
       {/* ── NAVBAR ── */}
       <header className="navbar">

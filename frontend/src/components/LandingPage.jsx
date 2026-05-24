@@ -59,13 +59,8 @@ export default function LandingPage({ onGetStarted }) {
 
   return (
     <div className="landing-container">
-      {/* Cinematic Spotlight and Light beam glow overlays */}
+      {/* Cinematic Spotlight */}
       <div className="cinematic-spotlight" />
-      <div className="light-beam-container">
-        <div className="light-beam-left" />
-        <div className="light-beam-right" />
-        <div className="light-beam-center" />
-      </div>
 
       {/* Floating Center Navbar */}
       <header className="lp-header">
