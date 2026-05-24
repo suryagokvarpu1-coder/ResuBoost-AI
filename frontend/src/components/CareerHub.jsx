@@ -16,6 +16,7 @@ export default function CareerHub({ user, apiKey, analysisResult }) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
   const [targetRole, setTargetRole] = useState('');
+  const [showChangeRole, setShowChangeRole] = useState(false);
 
   useEffect(() => {
     if (analysisResult?.extractedProfile?.profession) {
@@ -29,8 +30,12 @@ export default function CareerHub({ user, apiKey, analysisResult }) {
         suggestion = `Senior ${currentProfession}`;
       }
       setTargetRole(suggestion);
+    } else if (user?.preferences?.profession) {
+      setTargetRole(user.preferences.profession);
+    } else {
+      setTargetRole('Software Engineer');
     }
-  }, [analysisResult]);
+  }, [analysisResult, user]);
 
   const fetchExplore = async () => {
     setLoading(true);
@@ -110,8 +115,10 @@ export default function CareerHub({ user, apiKey, analysisResult }) {
   useEffect(() => {
     if (activeView === 'explore') {
       fetchExplore();
-    } else if (activeView === 'roadmap' && targetRole && !data?.phases) {
-      fetchRoadmap();
+    } else if (activeView === 'roadmap') {
+      if (targetRole && (!data?.phases || data?.targetRole !== targetRole)) {
+        fetchRoadmap();
+      }
     } else {
       setData(null);
     }
@@ -195,7 +202,7 @@ export default function CareerHub({ user, apiKey, analysisResult }) {
                         <span className="badge badge-success" style={{ flexShrink: 0 }}>{path.match}% Match</span>
                       </div>
                       <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)' }}>{path.reason}</p>
-                      <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '1rem', borderRadius: 8, fontSize: '0.9rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '1rem', borderRadius: 8, fontSize: '0.9rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Clock size={14} /> Time to ready:</span>
                           <span>{path.timeToReady}</span>
@@ -206,9 +213,19 @@ export default function CareerHub({ user, apiKey, analysisResult }) {
                         </div>
                         <div style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: 6 }}>
                           <ChevronRight size={14} style={{ color: 'var(--color-primary)' }} />
-                          <strong style={{ color: 'var(--color-primary)' }}>Next Step:</strong> {path.firstStep}
+                          <span><strong style={{ color: 'var(--color-primary)' }}>Next Step:</strong> {path.firstStep}</span>
                         </div>
                       </div>
+                      <button
+                        className="btn btn-secondary"
+                        onClick={() => {
+                          setTargetRole(path.title);
+                          setActiveView('roadmap');
+                        }}
+                        style={{ width: '100%', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: '0.5rem' }}
+                      >
+                        <Map size={14} /> View AI Roadmap
+                      </button>
                     </motion.div>
                   ))}
                 </div>
@@ -218,25 +235,63 @@ export default function CareerHub({ user, apiKey, analysisResult }) {
             {/* Roadmap View */}
             {activeView === 'roadmap' && (
               <motion.div {...fadeUp} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
-                  <div style={{ flex: 1, minWidth: 300 }}>
-                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <Target size={14} /> Auto-Detected Target Role
-                    </label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="e.g. Senior Medical Officer, Lead Architect, etc."
-                      value={targetRole}
-                      onChange={(e) => setTargetRole(e.target.value)}
-                    />
+                
+                {/* Header with dynamic targetRole and change button */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}>
+                  <div>
+                    <span className="badge badge-info" style={{ marginBottom: '0.5rem', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <Target size={12} /> AI Career Pathway
+                    </span>
+                    <h2 style={{ fontSize: '1.8rem', color: 'var(--color-primary)', margin: 0 }}>
+                      Roadmap to {targetRole}
+                    </h2>
                   </div>
-                  <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                    className="btn btn-primary" onClick={fetchRoadmap} disabled={!targetRole}
-                    style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <Zap size={16} /> Generate Personalized Roadmap
-                  </motion.button>
+                  <button className="btn btn-secondary" onClick={() => setShowChangeRole(!showChangeRole)} style={{ fontSize: '0.85rem' }}>
+                    {showChangeRole ? 'Cancel' : 'Change Target Role'}
+                  </button>
                 </div>
+
+                {/* Collapsible Custom Input Form */}
+                {showChangeRole && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }} 
+                    animate={{ opacity: 1, y: 0 }}
+                    style={{ 
+                      display: 'flex', 
+                      gap: '1rem', 
+                      alignItems: 'flex-end', 
+                      flexWrap: 'wrap', 
+                      background: 'rgba(255,255,255,0.01)', 
+                      padding: '1.25rem', 
+                      borderRadius: '12px', 
+                      border: '1px solid var(--border-color)' 
+                    }}
+                  >
+                    <div style={{ flex: 1, minWidth: 260 }}>
+                      <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <Target size={14} /> Specify Custom Role
+                      </label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="e.g. Senior Medical Officer, Lead Architect, etc."
+                        value={targetRole}
+                        onChange={(e) => setTargetRole(e.target.value)}
+                      />
+                    </div>
+                    <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                      className="btn btn-primary" 
+                      onClick={() => {
+                        fetchRoadmap();
+                        setShowChangeRole(false);
+                      }} 
+                      disabled={!targetRole}
+                      style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+                    >
+                      <Zap size={16} /> Regenerate Roadmap
+                    </motion.button>
+                  </motion.div>
+                )}
 
                 {data && data.isValidRequest === false && data.validationMessage && (
                   <motion.div {...fadeUp} className="badge badge-danger" style={{ padding: '1rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: 8 }}>
