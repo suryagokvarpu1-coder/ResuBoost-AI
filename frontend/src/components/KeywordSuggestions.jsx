@@ -80,7 +80,7 @@ export default function KeywordSuggestions({ data }) {
             {matchPercent}%
           </span>
         </div>
-        <div style={{ height: 8, background: 'rgba(0,0,0,0.3)', borderRadius: 4, overflow: 'hidden' }}>
+        <div style={{ height: 8, background: 'rgba(255, 255, 255, 0.05)', borderRadius: 4, overflow: 'hidden' }}>
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${matchPercent}%` }}

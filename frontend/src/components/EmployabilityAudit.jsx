@@ -25,6 +25,7 @@ const CircularMeter = ({ value, color, size = 80 }) => {
           initial={{ strokeDashoffset: circ }}
           animate={{ strokeDashoffset: offset }}
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+          style={{ filter: `drop-shadow(0 0 5px ${color}80)` }}
         />
       </svg>
       <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.2rem', color: '#fff' }}>

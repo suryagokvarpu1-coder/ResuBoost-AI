@@ -195,7 +195,7 @@ export default function CareerHub({ user, apiKey, analysisResult }) {
                         <span className="badge badge-success" style={{ flexShrink: 0 }}>{path.match}% Match</span>
                       </div>
                       <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)' }}>{path.reason}</p>
-                      <div style={{ background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: 8, fontSize: '0.9rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '1rem', borderRadius: 8, fontSize: '0.9rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Clock size={14} /> Time to ready:</span>
                           <span>{path.timeToReady}</span>
@@ -296,7 +296,7 @@ export default function CareerHub({ user, apiKey, analysisResult }) {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
                               {(phase.tasks || []).map((task, tidx) => (
                                 <div key={tidx} style={{
-                                  background: 'rgba(0,0,0,0.3)',
+                                  background: 'rgba(255, 255, 255, 0.02)',
                                   border: '1px solid rgba(255,255,255,0.03)',
                                   padding: '1rem', borderRadius: 8,
                                   display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem'
@@ -309,7 +309,7 @@ export default function CareerHub({ user, apiKey, analysisResult }) {
                               ))}
                             </div>
 
-                            <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '1rem', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.15)', padding: '1rem', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
                               <Milestone size={18} style={{ color: 'var(--color-success)', flexShrink: 0 }} />
                               <span><strong style={{ color: 'var(--color-success)' }}>Milestone:</strong> <span style={{ color: 'var(--text-secondary)' }}>{phase.milestone}</span></span>
                             </div>
