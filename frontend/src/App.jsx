@@ -208,7 +208,7 @@ export default function App() {
               style={{
                 position: 'absolute', inset: '-18px',
                 borderRadius: 'var(--radius-lg)',
-                background: 'radial-gradient(circle, rgba(217, 70, 239, 0.4) 0%, transparent 70%)',
+                background: 'radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%)',
                 filter: 'blur(12px)',
               }}
             />
@@ -219,7 +219,8 @@ export default function App() {
                 width: '88px', height: '88px',
                 background: 'var(--gradient-primary)',
                 borderRadius: '22px',
-                boxShadow: '0 12px 35px rgba(217, 70, 239, 0.35)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                boxShadow: '0 12px 35px rgba(255, 255, 255, 0.08)',
                 padding: '3px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 position: 'relative', zIndex: 2,
