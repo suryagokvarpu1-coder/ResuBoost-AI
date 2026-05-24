@@ -32,6 +32,7 @@ const ScoreRing = ({ score, size = 150, strokeWidth = 10, color }) => {
           animate={{ strokeDashoffset: offset }}
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
           strokeDasharray={circumference}
+          style={{ filter: `drop-shadow(0 0 5px ${color}80)` }}
         />
       </svg>
       <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
@@ -58,7 +59,7 @@ const BreakdownBar = ({ label, score, color, icon: Icon, delay = 0 }) => (
       </span>
       <span style={{ color }}>{score}%</span>
     </div>
-    <div style={{ height: 8, background: 'rgba(0,0,0,0.3)', borderRadius: 4, overflow: 'hidden' }}>
+    <div style={{ height: 8, background: 'rgba(255, 255, 255, 0.05)', borderRadius: 4, overflow: 'hidden' }}>
       <motion.div
         initial={{ width: 0 }}
         animate={{ width: `${score}%` }}
@@ -132,7 +133,7 @@ export default function Dashboard({ data, onReset }) {
     <motion.div variants={stagger} initial="initial" animate="animate" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
 
       {/* 1. Profile Identity Banner */}
-      <motion.div {...fadeUp} className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(16, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%)', borderTop: '4px solid var(--color-primary)', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <motion.div {...fadeUp} className="glass-card" style={{ borderTop: '3px solid var(--color-primary)', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <h1 style={{ fontSize: '2rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

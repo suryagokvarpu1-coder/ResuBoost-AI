@@ -68,30 +68,33 @@ export default function AuthScreen() {
       initial={{ opacity: 0, y: 30, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      style={{ maxWidth: '440px', width: '100%', margin: '2rem auto', display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}
+      style={{ maxWidth: '440px', width: '100%', margin: '2rem auto', display: 'flex', flexDirection: 'column', gap: 'var(--space-6)', position: 'relative' }}
     >
+      {/* Subtle backdrop glow behind the login modal */}
+      <div style={{ position: 'absolute', inset: -50, background: 'radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none', zIndex: 0 }} />
+
       {/* Header */}
-      <div className="text-center">
+      <div className="text-center" style={{ position: 'relative', zIndex: 1 }}>
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
           style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: '56px', height: '56px',
+            width: '52px', height: '52px',
             background: 'var(--gradient-primary)',
-            borderRadius: 'var(--radius-md)',
-            boxShadow: '0 8px 25px rgba(217, 70, 239, 0.3)',
-            marginBottom: 'var(--space-5)', padding: '3px',
+            borderRadius: '13px',
+            boxShadow: '0 8px 25px rgba(217, 70, 239, 0.2)',
+            marginBottom: 'var(--space-4)', padding: '3px',
           }}
         >
-          <img src="/resuboost_logo.png" alt="ResuBoost" style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} />
+          <img src="/resuboost_logo.png" alt="ResuBoost" style={{ width: '100%', height: '100%', borderRadius: '10px', objectFit: 'cover' }} />
         </motion.div>
 
-        <h1 style={{ fontSize: '2rem', fontWeight: 900 }}>
+        <h1 style={{ fontSize: '1.85rem', fontWeight: 850, color: '#fff', letterSpacing: '-0.03em' }}>
           Welcome to <span className="glow-text-gradient">ResuBoost AI</span>
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: 'var(--space-2)' }}>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginTop: 'var(--space-2)' }}>
           AI-Powered Resume Analysis & Career Platform
         </p>
       </div>
@@ -102,7 +105,7 @@ export default function AuthScreen() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
-        style={{ padding: 'var(--space-10) var(--space-8)' }}
+        style={{ padding: 'var(--space-10) var(--space-8)', position: 'relative', zIndex: 1 }}
       >
         <AnimatePresence mode="wait">
           <motion.h2

@@ -334,7 +334,7 @@ export default function ResumeAnalyzer({ apiKey, onAnalysisComplete }) {
             onClick={() => uploadMode === 'single' ? fileInputRef.current.click() : batchInputRef.current.click()}
             whileHover={{ borderColor: 'var(--color-primary)', background: 'rgba(59, 130, 246, 0.04)' }}
             style={{
-              border: `2px dashed ${isDragging ? 'var(--color-primary)' : 'var(--border-color)'}`,
+              border: `2px dashed ${isDragging ? 'var(--color-primary)' : 'rgba(255, 255, 255, 0.12)'}`,
               background: isDragging ? 'rgba(59, 130, 246, 0.06)' : 'transparent',
               borderRadius: 'var(--radius-md)',
               padding: 'var(--space-10) var(--space-6)',
