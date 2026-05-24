@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, Rocket, BookOpen, Briefcase, BarChart3,
-  Key, GraduationCap, Target, User, Sparkles, Zap
+  Key, GraduationCap, Target, User, Sparkles, Zap, X
 } from 'lucide-react';
 import ResumeAnalyzer from './components/ResumeAnalyzer';
 import Dashboard from './components/Dashboard';
@@ -17,6 +17,7 @@ import Profile from './components/Profile';
 import CareerHub from './components/CareerHub';
 import LearningHub from './components/LearningHub';
 import OpportunityHub from './components/OpportunityHub';
+import LandingPage from './components/LandingPage';
 
 // Animation variants
 const pageVariants = {
@@ -51,6 +52,7 @@ export default function App() {
   const [authLoading, setAuthLoading] = useState(true);
   const [splashLoading, setSplashLoading] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Track Firebase Authentication State & Realtime Database sync
   useEffect(() => {
@@ -317,32 +319,49 @@ export default function App() {
   }
 
   // ═══════════════════════════════════════════════
-  // AUTH SCREEN
+  // LANDING PAGE & AUTH MODAL
   // ═══════════════════════════════════════════════
   if (!user) {
     return (
-      <div className="app-container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <div className="ambient-orb orb-blue" />
-        <div className="ambient-orb orb-pink" />
-        <div className="ambient-orb orb-accent" />
+      <>
+        <LandingPage onGetStarted={() => setShowAuthModal(true)} />
 
-        <header className="navbar" style={{ justifyContent: 'center' }}>
-          <a href="/" className="logo" onClick={(e) => { e.preventDefault(); window.location.reload(); }}>
-            <div className="logo-icon">
-              <img src="/resuboost_logo.png" alt="ResuBoost" />
-            </div>
-            <span className="glow-text-gradient">ResuBoost AI</span>
-          </a>
-        </header>
-
-        <main className="main-content flex-center" style={{ flex: 1 }}>
-          <AuthScreen />
-        </main>
-
-        <footer className="app-footer">
-          <p>© {new Date().getFullYear()} ResuBoost AI. All rights reserved.</p>
-        </footer>
-      </div>
+        <AnimatePresence>
+          {showAuthModal && (
+            <motion.div
+              className="auth-modal-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowAuthModal(false)}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 30 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 30 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                style={{ position: 'relative', width: '100%', maxWidth: '440px', margin: '2rem auto' }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  className="auth-modal-close"
+                  onClick={() => setShowAuthModal(false)}
+                  aria-label="Close modal"
+                  style={{
+                    position: 'absolute',
+                    top: '20px',
+                    right: '20px',
+                    zIndex: 2005
+                  }}
+                >
+                  <X size={18} />
+                </button>
+                <AuthScreen />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </>
     );
   }
 
