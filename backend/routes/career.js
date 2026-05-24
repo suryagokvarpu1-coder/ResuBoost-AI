@@ -9,6 +9,29 @@ import { DOMAINS, USER_CATEGORIES, GOVERNMENT_SCHEMES } from '../data/careersDat
 
 const router = express.Router();
 
+// Helper to map Gemini API errors to user-friendly messages
+function mapGeminiError(err, defaultMessage) {
+  let errorMessage = (err.message || '').toLowerCase();
+  let friendlyMessage = defaultMessage;
+  let statusCode = 500;
+
+  if (errorMessage.includes('invalid_api_key') || errorMessage.includes('api key not valid') || errorMessage.includes('400')) {
+    friendlyMessage = 'Invalid API Key. Please verify your Gemini API key in Settings.';
+    statusCode = 401;
+  } else if (errorMessage.includes('quota_exceeded') || errorMessage.includes('429')) {
+    friendlyMessage = 'Your Gemini API key quota has been exceeded. Please check your usage or try again later.';
+    statusCode = 429;
+  } else if (errorMessage.includes('api_key_missing')) {
+    friendlyMessage = 'Gemini API key is missing. Please configure it in Settings.';
+    statusCode = 400;
+  } else if (errorMessage.includes('model_unavailable') || errorMessage.includes('503') || errorMessage.includes('unavailable')) {
+    friendlyMessage = 'The Gemini API service is temporarily unavailable. Please try again.';
+    statusCode = 503;
+  }
+
+  return { friendlyMessage, statusCode };
+}
+
 // GET /api/career/meta — Return all categories, domains, schemes (no AI needed)
 router.get('/meta', (req, res) => {
   try {
@@ -67,7 +90,8 @@ router.post('/explore', async (req, res) => {
     res.json({ ...result, isAI: true });
   } catch (err) {
     console.error('Career Explore Error:', err);
-    res.status(500).json({ error: 'Career exploration failed.', details: err.message });
+    const { friendlyMessage, statusCode } = mapGeminiError(err, 'Career exploration failed.');
+    res.status(statusCode).json({ error: friendlyMessage, details: err.message });
   }
 });
 
@@ -110,7 +134,8 @@ router.post('/roadmap', async (req, res) => {
     res.json({ ...result, isAI: true });
   } catch (err) {
     console.error('Roadmap Generation Error:', err);
-    res.status(500).json({ error: 'Roadmap generation failed.', details: err.message });
+    const { friendlyMessage, statusCode } = mapGeminiError(err, 'Roadmap generation failed.');
+    res.status(statusCode).json({ error: friendlyMessage, details: err.message });
   }
 });
 
@@ -144,7 +169,8 @@ router.post('/domain-guide', async (req, res) => {
     res.json({ ...result, isAI: true });
   } catch (err) {
     console.error('Domain Guide Error:', err);
-    res.status(500).json({ error: 'Domain guide generation failed.', details: err.message });
+    const { friendlyMessage, statusCode } = mapGeminiError(err, 'Domain guide generation failed.');
+    res.status(statusCode).json({ error: friendlyMessage, details: err.message });
   }
 });
 

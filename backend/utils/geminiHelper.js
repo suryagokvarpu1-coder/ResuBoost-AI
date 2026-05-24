@@ -156,9 +156,27 @@ export async function executeWithGeminiFallback(clientApiKey, promptParts) {
  */
 export function cleanJsonResponse(text) {
   let cleaned = text.trim();
+  
+  // Find the boundaries of the JSON object
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+  } else {
+    // If it's a JSON array instead of an object
+    const firstBracket = cleaned.indexOf('[');
+    const lastBracket = cleaned.lastIndexOf(']');
+    if (firstBracket !== -1 && lastBracket !== -1 && lastBracket > firstBracket) {
+      cleaned = cleaned.substring(firstBracket, lastBracket + 1);
+    }
+  }
+
+  // Strip code block markers just in case they are still within boundaries
   if (cleaned.startsWith('```')) {
     cleaned = cleaned.replace(/^```[a-zA-Z0-9]*\s*/, '');
     cleaned = cleaned.replace(/\s*```$/, '');
   }
+  
   return JSON.parse(cleaned.trim());
 }
