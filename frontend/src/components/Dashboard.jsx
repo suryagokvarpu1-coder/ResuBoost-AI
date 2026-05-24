@@ -21,8 +21,19 @@ const ScoreRing = ({ score, size = 150, strokeWidth = 10, color }) => {
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
   return (
-    <div style={{ position: 'relative', width: size, height: size }}>
-      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+    <div style={{ position: 'relative', width: size, height: size, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {/* Dynamic circular glow behind ScoreRing */}
+      <div style={{
+        position: 'absolute',
+        width: size - 20,
+        height: size - 20,
+        borderRadius: '50%',
+        background: `radial-gradient(circle, ${color}12 0%, ${color}00 70%)`,
+        filter: 'blur(15px)',
+        zIndex: 0,
+        pointerEvents: 'none'
+      }} />
+      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)', zIndex: 1 }}>
         <circle cx={size / 2} cy={size / 2} r={radius} stroke="rgba(255,255,255,0.04)" strokeWidth={strokeWidth} fill="none" />
         <motion.circle
           cx={size / 2} cy={size / 2} r={radius}
@@ -35,7 +46,7 @@ const ScoreRing = ({ score, size = 150, strokeWidth = 10, color }) => {
           style={{ filter: `drop-shadow(0 0 5px ${color}80)` }}
         />
       </svg>
-      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', zIndex: 2 }}>
         <motion.span
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -64,6 +75,7 @@ const BreakdownBar = ({ label, score, color, icon: Icon, delay = 0 }) => (
         initial={{ width: 0 }}
         animate={{ width: `${score}%` }}
         transition={{ duration: 0.9, delay: delay + 0.2, ease: [0.16, 1, 0.3, 1] }}
+        className="progress-bar-shimmer"
         style={{ height: '100%', background: `linear-gradient(90deg, ${color}, ${color}cc)`, borderRadius: 4 }}
       />
     </div>
@@ -212,11 +224,11 @@ export default function Dashboard({ data, onReset }) {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
             {skills.length > 0 ? skills.map((s, i) => (
               <motion.span key={i} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.03 }}
-                className="badge" style={{ background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)', color: '#60a5fa' }}>{s}</motion.span>
+                className="badge badge-skill">{s}</motion.span>
             )) : null}
             {tools.length > 0 ? tools.map((t, i) => (
               <motion.span key={`t-${i}`} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: (skills.length + i) * 0.03 }}
-                className="badge" style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.3)', color: '#a78bfa' }}>{t}</motion.span>
+                className="badge badge-tool">{t}</motion.span>
             )) : null}
             {skills.length === 0 && tools.length === 0 && <span style={{ color: 'var(--text-muted)' }}>None detected</span>}
           </div>

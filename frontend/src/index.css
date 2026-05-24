@@ -438,11 +438,11 @@ a:hover { color: var(--color-primary-light); }
 
 .glass-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.15);
   box-shadow:
-    0 24px 50px -10px rgba(0, 0, 0, 0.65),
-    0 0 30px rgba(59, 130, 246, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 30px 70px -10px rgba(0, 0, 0, 0.95),
+    0 0 30px rgba(255, 255, 255, 0.02),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .glass-card:hover::before {
@@ -654,10 +654,10 @@ a:hover { color: var(--color-primary-light); }
 
 .form-input:focus, .form-textarea:focus, .form-select:focus {
   outline: none;
-  border-color: var(--color-primary-light);
-  background: rgba(8, 10, 16, 0.85);
+  border-color: var(--color-primary);
+  background: rgba(8, 8, 12, 0.98);
   box-shadow: 
-    0 0 20px rgba(59, 130, 246, 0.12),
+    0 0 20px rgba(255, 255, 255, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.02);
 }
 
@@ -865,6 +865,32 @@ a:hover { color: var(--color-primary-light); }
   border-color: rgba(6, 182, 212, 0.25);
 }
 
+.badge-skill {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.badge-skill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+  transform: scale(1.05);
+}
+
+.badge-tool {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.badge-tool:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  transform: scale(1.05);
+}
+
 /* ==========================================================================
    Score Ring
    ========================================================================== */
@@ -1012,6 +1038,34 @@ a:hover { color: var(--color-primary-light); }
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
+}
+
+@keyframes progressShimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.progress-bar-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+  transform: translateX(-100%);
+  animation: progressShimmer 2.2s infinite;
 }
 
 @keyframes pulseGlow {
@@ -1558,15 +1612,22 @@ input:checked + .toggle-slider:before {
   filter: blur(120px);
 }
 
+@keyframes pulseSpotlight {
+  0% { opacity: 0.65; transform: scale(1.02); }
+  50% { opacity: 0.95; transform: scale(1); }
+  100% { opacity: 0.65; transform: scale(1.02); }
+}
+
 .cinematic-spotlight {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at 15% 0%, rgba(255, 255, 255, 0.08) 0%, transparent 40%);
+  background: radial-gradient(circle at 15% 0%, rgba(255, 255, 255, 0.09) 0%, transparent 45%);
   pointer-events: none;
   z-index: 2;
+  animation: pulseSpotlight 12s ease-in-out infinite;
 }
 
 /* Floating Center Pill Header */
@@ -1925,6 +1986,27 @@ input:checked + .toggle-slider:before {
   cursor: pointer;
   transition: all var(--transition-fast);
   border: 1px solid transparent;
+  
+  /* Sequential fade-in state */
+  opacity: 0;
+  animation: sidebarItemFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.lp-sidebar-item:nth-child(1) { animation-delay: 0.1s; }
+.lp-sidebar-item:nth-child(2) { animation-delay: 0.2s; }
+.lp-sidebar-item:nth-child(3) { animation-delay: 0.3s; }
+.lp-sidebar-item:nth-child(4) { animation-delay: 0.4s; }
+.lp-sidebar-item:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes sidebarItemFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .lp-sidebar-item.active {
@@ -1973,7 +2055,15 @@ input:checked + .toggle-slider:before {
   overflow: hidden;
   cursor: pointer;
   transition: color var(--transition-fast);
+  
+  opacity: 0;
+  animation: sidebarItemFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+.lp-sidebar-recent:nth-child(2) { animation-delay: 0.5s; }
+.lp-sidebar-recent:nth-child(3) { animation-delay: 0.6s; }
+.lp-sidebar-recent:nth-child(4) { animation-delay: 0.7s; }
+.lp-sidebar-recent:nth-child(5) { animation-delay: 0.8s; }
 
 .lp-sidebar-recent:hover {
   color: #fff;
@@ -2309,41 +2399,53 @@ input:checked + .toggle-slider:before {
 }
 
 .lp-mockup-opt-card {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.015);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-  padding: 12px;
+  border-radius: 12px;
+  padding: 12px 8px;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-normal);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 3px;
   text-align: center;
 }
 
 .lp-mockup-opt-card:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-4px) scale(1.05) rotate(1deg);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
 }
 
 .lp-mockup-opt-icon {
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 2px;
+  transition: all var(--transition-fast);
 }
 
 .lp-mockup-opt-card:hover .lp-mockup-opt-icon {
   color: #fff;
+  transform: scale(1.1);
 }
 
 .lp-mockup-opt-label {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.4);
-  font-weight: 600;
+  font-weight: 700;
+  color: #fff;
+  transition: all var(--transition-fast);
 }
 
-.lp-mockup-opt-card:hover .lp-mockup-opt-label {
-  color: rgba(255, 255, 255, 0.85);
+.lp-mockup-opt-sublabel {
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.3);
+  line-height: 1.2;
+  transition: all var(--transition-fast);
+}
+
+.lp-mockup-opt-card:hover .lp-mockup-opt-sublabel {
+  color: rgba(255, 255, 255, 0.6);
 }
 
 /* Sections Common Styles */

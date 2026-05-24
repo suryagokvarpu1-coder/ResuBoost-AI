@@ -282,26 +282,26 @@ export default function LandingPage({ onGetStarted }) {
 
                     {/* 3 cards next to each other */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', width: '100%', maxWidth: '450px', marginTop: '8px' }}>
-                      <div className="lp-mockup-opt-card" onClick={startSimulatedScan} style={{ padding: '12px 8px', gap: '3px', borderRadius: '12px', background: 'rgba(255,255,255,0.015)' }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '2px' }}>
+                      <div className="lp-mockup-opt-card" onClick={startSimulatedScan}>
+                        <svg className="lp-mockup-opt-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
                         </svg>
-                        <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#fff' }}>Upload Resume</span>
-                        <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.3)', lineHeight: 1.2 }}>Score ATS layout</span>
+                        <span className="lp-mockup-opt-label">Upload Resume</span>
+                        <span className="lp-mockup-opt-sublabel">Score ATS layout</span>
                       </div>
-                      <div className="lp-mockup-opt-card" onClick={startSimulatedScan} style={{ padding: '12px 8px', gap: '3px', borderRadius: '12px', background: 'rgba(255,255,255,0.015)' }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '2px' }}>
+                      <div className="lp-mockup-opt-card" onClick={startSimulatedScan}>
+                        <svg className="lp-mockup-opt-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24M14.83 9.17l4.24-4.24M14.83 14.83l4.24 4.24M9.17 14.83l-4.24 4.24"/>
                         </svg>
-                        <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#fff' }}>Optimize Bullets</span>
-                        <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.3)', lineHeight: 1.2 }}>Enhance actions</span>
+                        <span className="lp-mockup-opt-label">Optimize Bullets</span>
+                        <span className="lp-mockup-opt-sublabel">Enhance actions</span>
                       </div>
-                      <div className="lp-mockup-opt-card" onClick={startSimulatedScan} style={{ padding: '12px 8px', gap: '3px', borderRadius: '12px', background: 'rgba(255,255,255,0.015)' }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '2px' }}>
+                      <div className="lp-mockup-opt-card" onClick={startSimulatedScan}>
+                        <svg className="lp-mockup-opt-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
                         </svg>
-                        <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#fff' }}>Career Roadmap</span>
-                        <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.3)', lineHeight: 1.2 }}>Map skill levels</span>
+                        <span className="lp-mockup-opt-label">Career Roadmap</span>
+                        <span className="lp-mockup-opt-sublabel">Map skill levels</span>
                       </div>
                     </div>
                   </motion.div>

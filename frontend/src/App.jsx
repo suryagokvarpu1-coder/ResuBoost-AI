@@ -387,6 +387,21 @@ export default function App() {
             >
               <Icon size={15} className="nav-icon" />
               <span>{label}</span>
+              {activeTab === key && (
+                <motion.div
+                  layoutId="activeTabIndicator"
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: '15%',
+                    right: '15%',
+                    height: '2px',
+                    background: '#fff',
+                    borderRadius: '2px',
+                    boxShadow: '0 0 8px rgba(255, 255, 255, 0.6)',
+                  }}
+                />
+              )}
             </button>
           ))}
 
@@ -398,6 +413,21 @@ export default function App() {
             >
               <Icon size={15} className="nav-icon" />
               <span>{label}</span>
+              {activeTab === key && (
+                <motion.div
+                  layoutId="activeTabIndicator"
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: '15%',
+                    right: '15%',
+                    height: '2px',
+                    background: '#fff',
+                    borderRadius: '2px',
+                    boxShadow: '0 0 8px rgba(255, 255, 255, 0.6)',
+                  }}
+                />
+              )}
             </button>
           ))}
 
@@ -407,6 +437,21 @@ export default function App() {
           >
             <Target size={15} className="nav-icon" />
             <span>Optimizer</span>
+            {activeTab === 'optimizer' && (
+              <motion.div
+                layoutId="activeTabIndicator"
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: '15%',
+                  right: '15%',
+                  height: '2px',
+                  background: '#fff',
+                  borderRadius: '2px',
+                  boxShadow: '0 0 8px rgba(255, 255, 255, 0.6)',
+                }}
+              />
+            )}
           </button>
         </nav>
 
