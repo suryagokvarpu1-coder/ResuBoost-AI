@@ -10,13 +10,13 @@
    ========================================================================== */
 
 :root {
-  /* ── Color Palette (Atmospheric Cosmic Dark) ── */
-  --bg-base: #0a0e1a;
-  --bg-surface: rgba(16, 23, 42, 0.65);
-  --bg-surface-solid: #10172a;
-  --bg-surface-hover: rgba(24, 34, 61, 0.85);
-  --bg-input: rgba(8, 12, 24, 0.9);
-  --bg-elevated: rgba(20, 28, 50, 0.8);
+  /* ── Color Palette (Atmospheric Cosmic Dark — Cerave Inspired) ── */
+  --bg-base: #030712;
+  --bg-surface: rgba(13, 16, 24, 0.55);
+  --bg-surface-solid: #0c0e14;
+  --bg-surface-hover: rgba(22, 28, 42, 0.75);
+  --bg-input: rgba(8, 10, 15, 0.9);
+  --bg-elevated: rgba(16, 20, 30, 0.8);
 
   /* ── Neon Brand Gradients ── */
   --color-primary: #3b82f6;
