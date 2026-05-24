@@ -473,23 +473,23 @@ export default function ResumeAnalyzer({ apiKey, onAnalysisComplete }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             className="glass-panel"
-            style={{ padding: 'var(--space-8)' }}
+            style={{ padding: 'var(--space-6)', borderRadius: 'var(--radius-md)', background: 'rgba(10, 11, 16, 0.4)' }}
           >
             <div className="flex-between mb-6">
-              <h2 style={{ fontSize: '1.35rem', margin: 0 }}>
+              <h2 style={{ fontSize: '1.2rem', margin: 0, fontFamily: 'var(--font-sans)', fontWeight: 800 }}>
                 Batch Results ({batchQueue.filter(f => f.status === 'Completed').length} / {batchQueue.length})
               </h2>
-              <button className="btn btn-outline btn-sm" onClick={() => setBatchQueue([])} disabled={isBatchProcessing}>
+              <button type="button" className="btn btn-outline btn-sm" onClick={() => setBatchQueue([])} disabled={isBatchProcessing}>
                 <Trash2 size={13} /> Clear
               </button>
             </div>
 
-            <div style={{ overflowX: 'auto' }}>
+            <div style={{ overflowX: 'auto', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(5, 6, 9, 0.3)' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
+                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.01)' }}>
                     {['File Name', 'Status', 'Profession', 'Score', 'Action'].map(h => (
-                      <th key={h} style={{ padding: 'var(--space-4)', fontWeight: 600, fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</th>
+                      <th key={h} style={{ padding: '1rem var(--space-4)', fontWeight: 700, fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -500,36 +500,38 @@ export default function ResumeAnalyzer({ apiKey, onAnalysisComplete }) {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: idx * 0.05 }}
-                      style={{ borderBottom: '1px solid var(--border-color)' }}
+                      style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)', transition: 'background-color 0.2s' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.02)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     >
-                      <td style={{ padding: 'var(--space-4)', fontWeight: 600, fontSize: '0.9rem' }}>
-                        <span className="flex-center gap-2">
-                          <FileText size={14} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
+                      <td style={{ padding: '1rem var(--space-4)', fontWeight: 600, fontSize: '0.88rem', color: '#fff' }}>
+                        <span className="flex-center gap-2" style={{ justifyContent: 'flex-start' }}>
+                          <FileText size={14} style={{ color: 'var(--color-primary-light)', flexShrink: 0 }} />
                           {item.file.name}
                         </span>
                       </td>
-                      <td style={{ padding: 'var(--space-4)' }}>
-                        <span className={`badge ${item.status === 'Completed' ? 'badge-success' : item.status === 'Failed' ? 'badge-danger' : item.status === 'Analyzing' ? 'badge-info' : 'badge-accent'}`}>
-                          {item.status === 'Analyzing' && <Loader size={12} style={{ animation: 'spin 1s linear infinite' }} />}
-                          {item.status === 'Completed' && <CheckCircle size={12} />}
-                          {item.status === 'Failed' && <XCircle size={12} />}
+                      <td style={{ padding: '1rem var(--space-4)' }}>
+                        <span className={`badge ${item.status === 'Completed' ? 'badge-success' : item.status === 'Failed' ? 'badge-danger' : item.status === 'Analyzing' ? 'badge-info' : 'badge-accent'}`} style={{ fontSize: '0.68rem', padding: '0.2rem 0.6rem' }}>
+                          {item.status === 'Analyzing' && <Loader size={11} style={{ animation: 'spin 1s linear infinite', marginRight: '4px' }} />}
+                          {item.status === 'Completed' && <CheckCircle size={11} style={{ marginRight: '4px' }} />}
+                          {item.status === 'Failed' && <XCircle size={11} style={{ marginRight: '4px' }} />}
                           {item.status}
                         </span>
                         {item.errorMsg && <div className="text-xs" style={{ color: 'var(--color-danger)', marginTop: '4px', maxWidth: '200px' }}>{item.errorMsg}</div>}
                       </td>
-                      <td style={{ padding: 'var(--space-4)', color: 'var(--color-secondary)', fontSize: '0.9rem' }}>
+                      <td style={{ padding: '1rem var(--space-4)', color: 'var(--color-secondary-light)', fontSize: '0.85rem', fontWeight: 550 }}>
                         {item.data?.extractedProfile?.profession || item.data?.detectedDomain || '—'}
                       </td>
-                      <td style={{ padding: 'var(--space-4)' }}>
+                      <td style={{ padding: '1rem var(--space-4)' }}>
                         {item.data?.atsScore !== undefined ? (
-                          <span className={`badge ${item.data.atsScore >= 75 ? 'badge-success' : item.data.atsScore >= 50 ? 'badge-warning' : 'badge-danger'}`}>
+                          <span className={`badge ${item.data.atsScore >= 75 ? 'badge-success' : item.data.atsScore >= 50 ? 'badge-warning' : 'badge-danger'}`} style={{ fontSize: '0.72rem', padding: '0.25rem 0.65rem' }}>
                             {item.data.atsScore}%
                           </span>
                         ) : '—'}
                       </td>
-                      <td style={{ padding: 'var(--space-4)' }}>
+                      <td style={{ padding: '1rem var(--space-4)' }}>
                         {item.data && (
-                          <button className="btn btn-primary btn-sm" onClick={() => onAnalysisComplete(item.data, jobDescription)}>
+                          <button type="button" className="btn btn-primary btn-sm" onClick={() => onAnalysisComplete(item.data, jobDescription)}>
                             <BarChart3 size={13} /> View
                           </button>
                         )}

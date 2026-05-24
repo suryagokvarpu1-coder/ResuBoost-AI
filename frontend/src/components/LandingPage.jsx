@@ -59,7 +59,8 @@ export default function LandingPage({ onGetStarted }) {
 
   return (
     <div className="landing-container">
-      {/* Light beam glow overlays */}
+      {/* Cinematic Spotlight and Light beam glow overlays */}
+      <div className="cinematic-spotlight" />
       <div className="light-beam-container">
         <div className="light-beam-left" />
         <div className="light-beam-right" />
@@ -177,43 +178,58 @@ export default function LandingPage({ onGetStarted }) {
             {/* Mock Sidebar */}
             <div className="lp-mockup-sidebar">
               <div className="lp-sidebar-menu">
-                <span className="lp-sidebar-heading">Core Modules</span>
+                {/* Sidebar Logo */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', padding: '0 4px' }}>
+                  <div style={{ width: '20px', height: '20px', background: 'var(--gradient-primary)', borderRadius: '5px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5px', boxShadow: '0 2px 8px rgba(192, 132, 252, 0.2)' }}>
+                    <img src="/resuboost_logo.png" style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} alt="" />
+                  </div>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.01em' }}>ResuBoost</span>
+                  <span style={{ marginLeft: 'auto', fontSize: '0.8rem', cursor: 'pointer', color: 'rgba(255,255,255,0.35)', fontWeight: 300 }}>+</span>
+                </div>
+
+                {/* Sidebar Search */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '8px', padding: '6px 10px', marginBottom: '10px' }}>
+                  <Search size={11} style={{ color: 'rgba(255,255,255,0.3)' }} />
+                  <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.3)' }}>Search</span>
+                </div>
+
                 <div
                   className={`lp-sidebar-item ${mockActiveTab === 'analyzer' ? 'active' : ''}`}
                   onClick={() => setMockActiveTab('analyzer')}
                 >
-                  <Search size={14} />
-                  <span>Resume Analyzer</span>
-                  <span className="lp-sidebar-badge lp-sidebar-badge-active">ATS</span>
+                  <Sparkles size={13} style={{ color: 'var(--color-primary-light)' }} />
+                  <span>AI Chatbot</span>
+                  <span className="lp-sidebar-badge lp-sidebar-badge-active">Active</span>
                 </div>
                 <div
-                  className={`lp-sidebar-item ${mockActiveTab === 'optimizer' ? 'active' : ''}`}
-                  onClick={() => setMockActiveTab('optimizer')}
+                  className={`lp-sidebar-item ${mockActiveTab === 'explore' ? 'active' : ''}`}
+                  onClick={() => setMockActiveTab('explore')}
                 >
-                  <Target size={14} />
-                  <span>Bullet Optimizer</span>
+                  <Search size={13} />
+                  <span>Explore Shelby</span>
                 </div>
                 <div
-                  className={`lp-sidebar-item ${mockActiveTab === 'career' ? 'active' : ''}`}
-                  onClick={() => setMockActiveTab('career')}
+                  className={`lp-sidebar-item ${mockActiveTab === 'application' ? 'active' : ''}`}
+                  onClick={() => setMockActiveTab('application')}
                 >
-                  <Rocket size={14} />
-                  <span>Career Path Hub</span>
+                  <Target size={13} />
+                  <span>Application</span>
                 </div>
                 <div
-                  className={`lp-sidebar-item ${mockActiveTab === 'learning' ? 'active' : ''}`}
-                  onClick={() => setMockActiveTab('learning')}
+                  className={`lp-sidebar-item ${mockActiveTab === 'project' ? 'active' : ''}`}
+                  onClick={() => setMockActiveTab('project')}
                 >
-                  <BookOpen size={14} />
-                  <span>Learning Pathways</span>
+                  <Briefcase size={13} />
+                  <span>Project</span>
                 </div>
               </div>
 
               <div className="lp-sidebar-menu" style={{ marginTop: 'auto' }}>
-                <span className="lp-sidebar-heading">Recent Audits</span>
-                <p className="lp-sidebar-recent">📁 Senior Project Manager.pdf</p>
-                <p className="lp-sidebar-recent">📁 Lead React Engineer.docx</p>
-                <p className="lp-sidebar-recent">📁 UX Designer Portfolio.pdf</p>
+                <span className="lp-sidebar-heading">Recent</span>
+                <p className="lp-sidebar-recent" onClick={startSimulatedScan}>What is responsive web design...</p>
+                <p className="lp-sidebar-recent" onClick={startSimulatedScan}>Explain UI grid systems in simpl...</p>
+                <p className="lp-sidebar-recent" onClick={startSimulatedScan}>Best practices for SaaS dashbo...</p>
+                <p className="lp-sidebar-recent" onClick={startSimulatedScan}>What is the difference between...</p>
               </div>
             </div>
 
@@ -229,52 +245,70 @@ export default function LandingPage({ onGetStarted }) {
                     exit={{ opacity: 0, scale: 0.96 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <div className="lp-mockup-logo-box">
-                      <img src="/resuboost_logo.png" alt="ResuBoost" />
+                    {/* Geometric Wireframe Cube Logo */}
+                    <div className="lp-mockup-logo-box" style={{ width: '52px', height: '52px', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'none' }}>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="url(#mockLogoGrad)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                        <line x1="12" y1="22.08" x2="12" y2="12" />
+                        <defs>
+                          <linearGradient id="mockLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="var(--color-primary)" />
+                            <stop offset="100%" stopColor="var(--color-secondary)" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
                     </div>
 
-                    <h2 className="lp-mockup-heading">
-                      {mockActiveTab === 'analyzer' && "Experience Smarter Resume Scanning with AI"}
-                      {mockActiveTab === 'optimizer' && "Optimize Resume Experiences with Bullet Points"}
-                      {mockActiveTab === 'career' && "Match with High-Compatibility Careers"}
-                      {mockActiveTab === 'learning' && "Close Skill Gaps via Customized Pathways"}
+                    <h2 className="lp-mockup-heading" style={{ fontSize: '1.45rem', fontWeight: 800, maxWidth: '480px', lineHeight: '1.3', fontFamily: 'var(--font-sans)', letterSpacing: '-0.02em' }}>
+                      Experience Smarter Conversations with an AI Assistant Built to Support Your Workflow
                     </h2>
 
-                    <p className="lp-mockup-subtext">
-                      {mockActiveTab === 'analyzer' && "Scan resumes against target descriptions to calculate ATS match percentages and extract suggestions."}
-                      {mockActiveTab === 'optimizer' && "Refine bullet points to emphasize action verbs, business impact, and measurable metrics."}
-                      {mockActiveTab === 'career' && "Let AI review your profile to recommend role fits, estimated salaries, and high-probability paths."}
-                      {mockActiveTab === 'learning' && "Generate structural learning curriculums to acquire missing tags and stay market competitive."}
+                    <p className="lp-mockup-subtext" style={{ maxWidth: '420px', margin: '0 auto', fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.4)' }}>
+                      Ask questions, explore ideas, and get intelligent responses through a chatbot designed for speed, clarity, and productivity.
                     </p>
 
-                    {mockActiveTab === 'analyzer' ? (
-                      <>
-                        <div className="lp-mock-dropzone-box" onClick={startSimulatedScan}>
-                          <Upload size={24} style={{ color: 'rgba(255, 255, 255, 0.45)', marginBottom: '4px' }} />
-                          <span className="lp-mock-dropzone-title">Click to Test with Sample Resume</span>
-                          <span className="lp-mock-dropzone-subtext">Runs a simulated AI matching analysis</span>
+                    {/* Input Bar */}
+                    <div className="lp-mockup-input-bar" onClick={startSimulatedScan} style={{ cursor: 'pointer', width: '100%', maxWidth: '450px' }}>
+                      <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.35)' }}>Ask Something to ResuBoost</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle' }}>
+                          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                          <path d="M19 10v1a7 7 0 0 1-14 0v-1M12 19v4M8 23h8" />
+                        </svg>
+                        <div className="lp-mockup-btn-send">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13" />
+                            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                          </svg>
                         </div>
+                      </div>
+                    </div>
 
-                        <div className="lp-mockup-options">
-                          <div className="lp-mockup-opt-card" onClick={startSimulatedScan}>
-                            <Briefcase size={14} className="lp-mockup-opt-icon" />
-                            <span className="lp-mockup-opt-label">Project Manager</span>
-                          </div>
-                          <div className="lp-mockup-opt-card" onClick={startSimulatedScan}>
-                            <Terminal size={14} className="lp-mockup-opt-icon" />
-                            <span className="lp-mockup-opt-label">React Engineer</span>
-                          </div>
-                          <div className="lp-mockup-opt-card" onClick={startSimulatedScan}>
-                            <Globe size={14} className="lp-mockup-opt-icon" />
-                            <span className="lp-mockup-opt-label">UX Designer</span>
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <button className="lp-btn-filled-pill" style={{ marginTop: '10px' }} onClick={onGetStarted}>
-                        Unlock Full Feature
-                      </button>
-                    )}
+                    {/* 3 cards next to each other */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', width: '100%', maxWidth: '450px', marginTop: '8px' }}>
+                      <div className="lp-mockup-opt-card" onClick={startSimulatedScan} style={{ padding: '12px 8px', gap: '3px', borderRadius: '12px', background: 'rgba(255,255,255,0.015)' }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '2px' }}>
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                        </svg>
+                        <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#fff' }}>Upload Resume</span>
+                        <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.3)', lineHeight: 1.2 }}>Score ATS layout</span>
+                      </div>
+                      <div className="lp-mockup-opt-card" onClick={startSimulatedScan} style={{ padding: '12px 8px', gap: '3px', borderRadius: '12px', background: 'rgba(255,255,255,0.015)' }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '2px' }}>
+                          <circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24M14.83 9.17l4.24-4.24M14.83 14.83l4.24 4.24M9.17 14.83l-4.24 4.24"/>
+                        </svg>
+                        <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#fff' }}>Optimize Bullets</span>
+                        <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.3)', lineHeight: 1.2 }}>Enhance actions</span>
+                      </div>
+                      <div className="lp-mockup-opt-card" onClick={startSimulatedScan} style={{ padding: '12px 8px', gap: '3px', borderRadius: '12px', background: 'rgba(255,255,255,0.015)' }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '2px' }}>
+                          <path d="M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+                        </svg>
+                        <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#fff' }}>Career Roadmap</span>
+                        <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.3)', lineHeight: 1.2 }}>Map skill levels</span>
+                      </div>
+                    </div>
                   </motion.div>
                 )}
 
@@ -313,7 +347,7 @@ export default function LandingPage({ onGetStarted }) {
                     transition={{ duration: 0.3 }}
                   >
                     <div className="lp-mock-report-row">
-                      <h3 style={{ fontSize: '1rem', fontWeight: 800, margin: 0 }}>ATS Analysis Completed</h3>
+                      <h3 style={{ fontSize: '0.95rem', fontWeight: 800, margin: 0, color: '#fff' }}>ATS Analysis Completed</h3>
                       <button className="lp-mock-report-reset-btn" onClick={() => setScanState('idle')}>
                         <RefreshCw size={11} style={{ verticalAlign: '-1px', marginRight: '4px' }} />
                         Scan Another

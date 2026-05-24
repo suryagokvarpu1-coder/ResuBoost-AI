@@ -133,7 +133,7 @@ export default function Dashboard({ data, onReset }) {
     <motion.div variants={stagger} initial="initial" animate="animate" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
 
       {/* 1. Profile Identity Banner */}
-      <motion.div {...fadeUp} className="glass-card" style={{ borderTop: '3px solid var(--color-primary)', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <motion.div {...fadeUp} className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(192, 132, 252, 0.02) 100%)', boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <h1 style={{ fontSize: '2rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -266,7 +266,7 @@ export default function Dashboard({ data, onReset }) {
         </motion.div>
 
         {/* Strengths */}
-        <motion.div {...fadeUp} className="glass-card" style={{ borderLeft: '4px solid var(--color-success)' }}>
+        <motion.div {...fadeUp} className="glass-card" style={{ borderLeft: '3px solid rgba(16, 185, 129, 0.4)', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.02) 0%, transparent 100%)' }}>
           <h4 style={{ color: 'var(--color-success)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: 8 }}>
             <Star size={18} /> Core Strengths
           </h4>
@@ -276,7 +276,7 @@ export default function Dashboard({ data, onReset }) {
         </motion.div>
 
         {/* Weaknesses */}
-        <motion.div {...fadeUp} className="glass-card" style={{ borderLeft: '4px solid var(--color-danger)' }}>
+        <motion.div {...fadeUp} className="glass-card" style={{ borderLeft: '3px solid rgba(244, 63, 94, 0.4)', background: 'linear-gradient(135deg, rgba(244, 63, 94, 0.02) 0%, transparent 100%)' }}>
           <h4 style={{ color: 'var(--color-danger)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: 8 }}>
             <AlertTriangle size={18} /> Missing Industry Skills
           </h4>
@@ -299,7 +299,7 @@ export default function Dashboard({ data, onReset }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {projectDoctor.map((pd, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-                style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: 8, borderLeft: pd.status === 'Good' ? '3px solid var(--color-success)' : '3px solid var(--color-warning)' }}>
+                style={{ padding: '1.2rem', background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: 'var(--radius-sm)', borderLeft: pd.status === 'Good' ? '3px solid rgba(16, 185, 129, 0.4)' : '3px solid rgba(245, 158, 11, 0.4)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                   <strong style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 6 }}>
                     <Code2 size={16} style={{ color: 'var(--color-primary)' }} /> {pd.originalProject}
