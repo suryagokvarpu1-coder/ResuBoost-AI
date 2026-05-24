@@ -80,8 +80,9 @@ export default function App() {
           });
 
           if (dbData.preferences?.theme) {
-            localStorage.setItem('resuboost_theme', dbData.preferences.theme);
-            document.documentElement.setAttribute('data-theme', dbData.preferences.theme);
+            const userTheme = dbData.preferences.theme === 'light' ? 'dark' : dbData.preferences.theme;
+            localStorage.setItem('resuboost_theme', userTheme);
+            document.documentElement.setAttribute('data-theme', userTheme);
           }
 
           if (dbData.apiKey && typeof dbData.apiKey === 'string' && dbData.apiKey.trim() !== '') {
@@ -126,7 +127,8 @@ export default function App() {
   // Initialize theme
   useEffect(() => {
     const savedTheme = localStorage.getItem('resuboost_theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', savedTheme);
+    const activeTheme = savedTheme === 'light' ? 'dark' : savedTheme;
+    document.documentElement.setAttribute('data-theme', activeTheme);
   }, []);
 
   const getLoadingMessage = (val) => {

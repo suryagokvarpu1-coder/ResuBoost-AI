@@ -55,7 +55,10 @@ export default function Profile({ user, apiKey, setApiKey, onProfileUpdate }) {
   const [keyStatus, setKeyStatus] = useState('none');
 
   // App Settings States
-  const [theme, setTheme] = useState(localStorage.getItem('resuboost_theme') || 'dark');
+  const [theme, setTheme] = useState(() => {
+    const savedTheme = localStorage.getItem('resuboost_theme') || 'dark';
+    return savedTheme === 'light' ? 'dark' : savedTheme;
+  });
   const [notifAts, setNotifAts] = useState(user?.preferences?.notifAts !== false);
   const [notifBullet, setNotifBullet] = useState(user?.preferences?.notifBullet !== false);
   const [notifSecurity, setNotifSecurity] = useState(user?.preferences?.notifSecurity === true);
@@ -803,7 +806,6 @@ export default function Profile({ user, apiKey, setApiKey, onProfileUpdate }) {
                       style={{ appearance: 'none', background: 'var(--bg-input)', cursor: 'pointer', fontSize: '0.95rem', fontWeight: 600 }}
                     >
                       <option value="dark">🌌 Atmospheric Cosmic Dark (Default)</option>
-                      <option value="light">☀️ Premium Light Mode</option>
                       <option value="cyberpunk">⚡ Neon Cyberpunk 2077</option>
                     </select>
                     <div style={{ position: 'absolute', top: '50%', right: '1.25rem', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-secondary)' }}>
